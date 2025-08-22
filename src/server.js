@@ -16,12 +16,12 @@ app.use('/api/v1/auth', authRoutes);
 
 // Rota de teste
 app.get('/', (req, res) => {
-    res.send('API Calvão de Cria está no ar!');
+  res.send('API Calvão de Cria está no ar!');
 });
 
 // Middleware de tratamento de erros GLOBAL
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor rodando na porta ${PORT}`);
+  console.log(`🚀 Servidor rodando na porta ${PORT}`);
 });

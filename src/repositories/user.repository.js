@@ -1,8 +1,6 @@
 const User = require('../models/user.model');
 
 const findByEmail = async (email) => {
-  // Adicionamos .select('+passwordHash') para explicitamente buscar a senha
-  // que por padrão está oculta em nosso model (select: false)
   return User.findOne({ email: email.toLowerCase() }).select('+passwordHash');
 };
 
@@ -16,7 +14,7 @@ const createUser = async (userData) => {
 };
 
 module.exports = {
-    findByEmail,
-    findById,
-    createUser,
+  findByEmail,
+  findById,
+  createUser,
 };
