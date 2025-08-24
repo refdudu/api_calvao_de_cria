@@ -18,14 +18,15 @@ const userSchema = new mongoose.Schema(
       required: [true, 'O CPF é obrigatório.'],
       unique: true,
     },
-    passwordHash: { type: String, required: true, select: false }, // select: false para não retornar por padrão
+    passwordHash: { type: String, required: true, select: false },
     birthDate: { type: Date },
-    phone: { type: String },
+    phone: { type: String, required: [true, 'O telefone é obrigatório.'] },
     role: {
       type: String,
       enum: ['customer', 'admin'],
       default: 'customer',
     },
+    currentRefreshTokenHash: { type: String, select: false },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
   },
