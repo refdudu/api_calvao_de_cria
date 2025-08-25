@@ -1,9 +1,8 @@
 const { body, param, query } = require('express-validator');
-const { validate,  } = require('./auth.validator');
-const {
-  ERROR_MESSAGES,
-  mongoIdRule,
-} = require('./validation.utils');
+const { validate } = require('./auth.validator');
+const AppError = require('../../utils/AppError');
+
+const { ALLOWLISTS, mongoIdRule, fieldWhitelistRule } = require('./validation.utils');
 
 const allowedQueryParams = [
   'search',
@@ -26,8 +25,7 @@ const createProductRules = () => [
 ];
 
 const updateProductRules = () => [
- mongoIdRule('productId', 'ID do produto inválido.')
- .bail(),
+  mongoIdRule('productId', 'ID do produto inválido.').bail(),
   body('name').optional().notEmpty().withMessage('O nome do produto é obrigatório.').trim(),
   body('price')
     .optional()
@@ -44,36 +42,32 @@ const updateProductRules = () => [
     .toBoolean()
     .withMessage('O status da promoção deve ser um booleano.'),
   body('isActive').optional().isBoolean().withMessage('O status de ativação deve ser um booleano.'),
+  fieldWhitelistRule(ALLOWLISTS.PRODUCT),
 ];
 
-const productIdRule = () => [
-  param('productId').isMongoId().withMessage('ID do produto inválido.'),
-  //      mongoIdRule('addressId', ERROR_MESSAGES.address.id.invalid).bail(),
-];
+const deleteProductRules = () => [mongoIdRule('productId', 'ID do produto inválido.').bail()];
 
 const listProductsRules = () => [
-    query("param").custom((_, { req }) => {
-    const keys = Object.keys(req.query);
-    const invalidKeys = keys.filter((k) => !allowedQueryParams.includes(k));
+  query().custom((_, { req }) => {
+    const invalidKeys = Object.keys(req.query).filter((k) => !allowedQueryParams.includes(k));
     if (invalidKeys.length > 0) {
-      throw new Error(`Parâmetros não permitidos: ${invalidKeys.join(', ')}`);
+      throw new AppError(`Parâmetros não permitidos: ${invalidKeys.join(', ')}`, 400);
     }
     return true;
   }),
-
   query('page')
     .optional()
     .isInt({ min: 1 })
     .withMessage('O parâmetro "page" deve ser um número inteiro maior ou igual a 1.'),
-query('limit')
-  .optional()
-  .isInt({ min: 1, max: 25 })
-  .withMessage('limit deve ser um número inteiro entre 1 e 25.'),
+  query('limit')
+    .optional()
+    .isInt({ min: 1, max: 25 })
+    .withMessage('limit deve ser um número inteiro entre 1 e 25.'),
   query('search')
     .optional()
     .isString()
-    .withMessage('O parâmetro "search" deve ser uma string.')
-    .trim(),
+    .trim()
+    .withMessage('O parâmetro "search" deve ser uma string.'),
   query('sortBy')
     .optional()
     .isIn(['name', 'price', 'rating'])
@@ -96,12 +90,38 @@ query('limit')
     .withMessage('O parâmetro "inPromotion" deve ser um booleano (true ou false).'),
 ];
 
+const validateUpdateImages = () => [
+  param('productId').isMongoId().withMessage('ID do produto inválido.'),
+  body('ids').isArray({ min: 1 }).withMessage('O campo "ids" deve ser um array de _ids'),
+  body('ids.*').isMongoId().withMessage('Cada _id no ids deve ser válido'),
+];
 
+const validateAddImages = () => [
+  param('productId').isMongoId().withMessage('ID do produto inválido.'),
+  (req, res, next) => {
+    if (
+      (!req.files || req.files.length === 0) &&
+      (!req.body.images || req.body.images.length === 0)
+    ) {
+      return next(new AppError('Nenhum arquivo ou URL enviado', 400));
+    }
+    next();
+  },
+];
+
+const validateDeleteImages = () => [
+  param('productId').isMongoId().withMessage('ID do produto inválido.'),
+  body('ids').isArray({ min: 1 }).withMessage('O campo "ids" deve ser um array de _ids'),
+  body('ids.*').isMongoId().withMessage('Cada _id no "ids" deve ser válido'),
+];
 
 module.exports = {
-  listProductsRules,
   createProductRules,
   updateProductRules,
-  productIdRule,
+  deleteProductRules,
+  listProductsRules,
+  validateUpdateImages,
+  validateAddImages,
+  validateDeleteImages,
   validate,
 };

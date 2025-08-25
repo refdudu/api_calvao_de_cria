@@ -2,7 +2,6 @@ const productService = require('../services/product.service');
 const asyncHandler = require('../utils/asyncHandler');
 const ResponseBuilder = require('../utils/responseBuilder');
 
-
 const getAllProducts = asyncHandler(async (req, res, next) => {
   const result = await productService.listPublicProducts(req.query);
   const response = new ResponseBuilder()

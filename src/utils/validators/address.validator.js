@@ -20,7 +20,7 @@ const createAddressRules = () => [
   body('city').notEmpty().withMessage(ERROR_MESSAGES.address.city.required).trim(),
   stateRule(),
   phoneRule(),
-  fieldWhitelistRule(ALLOWLISTS.CREATE_ADDRESS),
+  fieldWhitelistRule(ALLOWLISTS.ADDRESS),
 ];
 
 const updateAddressRules = () => [
@@ -59,7 +59,7 @@ const updateAddressRules = () => [
     .withMessage(ERROR_MESSAGES.address.city.required)
     .trim(),
   phoneRule().optional(),
-  fieldWhitelistRule(ALLOWLISTS.UPDATE_ADDRESS),
+  fieldWhitelistRule(ALLOWLISTS.ADDRESS),
 ];
 
 const getAddressDetailsRules = () => [mongoIdRule('addressId', ERROR_MESSAGES.address.id.invalid)];

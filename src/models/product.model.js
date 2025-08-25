@@ -21,7 +21,12 @@ const productSchema = new mongoose.Schema(
       min: 0,
     },
     isPromotionActive: { type: Boolean, default: false },
-    images: { type: [String], default: [] },
+    images: [
+      {
+        url: { type: String, required: true },
+        public_id: { type: String, default: null },
+      },
+    ],
     mainImageUrl: { type: String },
     stockQuantity: { type: Number, required: true, min: 0, default: 0 },
     isActive: { type: Boolean, default: true, index: true },
@@ -29,13 +34,13 @@ const productSchema = new mongoose.Schema(
   },
 
   {
-    timestamps: true
+    timestamps: true,
   }
 );
 
 productSchema.pre('save', function (next) {
   if (this.isModified('images') && this.images.length > 0) {
-    this.mainImageUrl = this.images[0];
+    this.mainImageUrl = this.images[0].url;
   }
   next();
 });

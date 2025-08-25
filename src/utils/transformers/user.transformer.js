@@ -48,4 +48,4 @@ const userTransformer = {
   }),
 };
 
-module.exports = userTransformer
+module.exports = userTransformer;

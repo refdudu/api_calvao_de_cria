@@ -15,7 +15,12 @@ router.post('/register', registerRules(), validate, authController.register);
 router.post('/login', loginRules(), validate, authController.login);
 router.post('/refresh', refreshTokenRules(), authController.refreshToken);
 router.post('/forgot-password', forgotPasswordRules(), validate, authController.forgotPassword);
-router.post('/reset-password/:resetToken', resetPasswordRules(), validate, authController.resetPassword);
+router.post(
+  '/reset-password/:resetToken',
+  resetPasswordRules(),
+  validate,
+  authController.resetPassword
+);
 
 router.post('/logout', authMiddleware, authController.logout);
 

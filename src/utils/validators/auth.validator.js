@@ -86,7 +86,7 @@ const forgotPasswordRules = () => [
   fieldWhitelistRule(ALLOWLISTS.FORGOT_PASSWORD),
 ];
 
-const resetPasswordRules = () => [  
+const resetPasswordRules = () => [
   param('resetToken')
     .trim()
     .notEmpty()

@@ -106,19 +106,7 @@ const ALLOWLISTS = {
   RESET_PASSWORD: ['password', 'passwordConfirm'],
   UPDATE_PROFILE: ['name', 'birthDate', 'phone'],
   CHANGE_PASSWORD: ['currentPassword', 'password', 'passwordConfirm'],
-  CREATE_ADDRESS: [
-    'alias',
-    'recipientName',
-    'cep',
-    'street',
-    'number',
-    'complement',
-    'neighborhood',
-    'city',
-    'state',
-    'phone',
-  ],
-  UPDATE_ADDRESS: [
+  ADDRESS: [
     'alias',
     'recipientName',
     'cep',
@@ -131,6 +119,16 @@ const ALLOWLISTS = {
     'phone',
   ],
   REFRESH_TOKEN: ['refreshToken'],
+  PRODUCT: [
+    'name',
+    'description',
+    'price',
+    'promotionalPrice',
+    'isPromotionActive',
+    'stockQuantity',
+    'isActive',
+    'rating',
+  ],
 };
 
 const nameRule = (name = 'name') =>

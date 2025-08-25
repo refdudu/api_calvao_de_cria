@@ -14,7 +14,7 @@ const findAllAdmin = async (filters, options) => {
 };
 
 const findByIdAdmin = async (productId) => {
-  return Product.findById(productId);
+  return Product.findById(productId).select('+isActive');
 };
 
 const updateById = async (productId, updateData) => {
@@ -26,9 +26,20 @@ const softDeleteById = async (productId) => {
   return Product.findByIdAndUpdate(productId, { isActive: false });
 };
 
+const hardDeleteById = async (productId) => {
+  return Product.findByIdAndDelete(productId);
+};
+
 const findByIdPublic = async (productId) => {
   // Busca apenas se o produto estiver ativo
-  return Product.findOne({ _id: productId, isActive: true });
+  return Product.findOne({ _id: productId});
+};
+
+const findByImagePublicId = async (publicId, excludeProductId) => {
+  return Product.find({
+    _id: { $ne: excludeProductId },
+    'images.public_id': publicId,
+  }).select('_id');
 };
 
 const findAllPublic = async (filters, options) => {
@@ -53,4 +64,6 @@ module.exports = {
   findByIdPublic,
   updateById,
   softDeleteById,
+  hardDeleteById,
+  findByImagePublicId,
 };

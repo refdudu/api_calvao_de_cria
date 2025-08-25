@@ -25,4 +25,3 @@ const addressTransformer = {
 };
 
 module.exports = addressTransformer;
-

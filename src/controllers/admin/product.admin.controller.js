@@ -3,8 +3,8 @@ const asyncHandler = require('../../utils/asyncHandler');
 const ResponseBuilder = require('../../utils/responseBuilder');
 
 const createNewProduct = asyncHandler(async (req, res, next) => {
-  const result = await adminProductService.createProduct(req.body);
-
+  const files = req.files;
+  const result = await adminProductService.createProduct(req.body, files);
   const response = new ResponseBuilder()
     .withStatus('success')
     .withDetails(result.details)
@@ -17,7 +17,6 @@ const createNewProduct = asyncHandler(async (req, res, next) => {
 
 const getAllProducts = asyncHandler(async (req, res, next) => {
   const result = await adminProductService.listProducts(req.query);
-
   const response = new ResponseBuilder()
     .withStatus('success')
     .withMessage(result.message)
@@ -40,8 +39,8 @@ const getOneProduct = asyncHandler(async (req, res, next) => {
 });
 
 const updateExistingProduct = asyncHandler(async (req, res, next) => {
-  const result = await adminProductService.updateProduct(req.params.productId, req.body);
-
+  const { productId } = req.params;
+  const result = await adminProductService.updateProduct(productId, req.body);
   const response = new ResponseBuilder()
     .withStatus('success')
     .withMessage(result.message)
@@ -53,8 +52,8 @@ const updateExistingProduct = asyncHandler(async (req, res, next) => {
 });
 
 const deleteExistingProduct = asyncHandler(async (req, res, next) => {
-  const result = await adminProductService.deleteProduct(req.params.productId);
-
+  const { productId } = req.params;
+  const result = await adminProductService.deleteProduct(productId);
   const response = new ResponseBuilder()
     .withStatus('success')
     .withMessage(null)
@@ -65,10 +64,50 @@ const deleteExistingProduct = asyncHandler(async (req, res, next) => {
   res.status(204).json(response);
 });
 
+const addProductImages = asyncHandler(async (req, res, next) => {
+  const { productId } = req.params;
+  const files = req.files;
+  const result = await adminProductService.addProductImages(productId, req.body, files);
+  const response = new ResponseBuilder()
+    .withStatus('success')
+    .withMessage(result.message)
+    .withData(result.data)
+    .build();
+
+  res.status(201).json(response);
+});
+
+const updateProductImages = asyncHandler(async (req, res, next) => {
+  const { productId } = req.params;
+  const result = await adminProductService.updateProductImages(productId, req.body);
+  const response = new ResponseBuilder()
+    .withStatus('success')
+    .withMessage(result.message)
+    .withData(result.data)
+    .build();
+
+  res.status(200).json(response);
+});
+
+const deleteProductImages = asyncHandler(async (req, res, next) => {
+  const { productId } = req.params;
+  const result = await adminProductService.deleteProductImages(productId, req.body);
+  const response = new ResponseBuilder()
+    .withStatus('success')
+    .withMessage(null)
+    .withData(result.data)
+    .build();
+
+  res.status(200).json(response);
+});
+
 module.exports = {
   createNewProduct,
   getAllProducts,
   getOneProduct,
   updateExistingProduct,
   deleteExistingProduct,
+  addProductImages,
+  updateProductImages,
+  deleteProductImages,
 };

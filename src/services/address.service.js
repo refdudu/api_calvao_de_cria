@@ -15,7 +15,7 @@ const addAddress = async (userId, addressData) => {
 const listAddressesSummary = async (userId) => {
   const addresses = await addressRepository.findAllAddressesByUserIdSummary(userId);
   const quantity = addresses.length;
-    
+
   return {
     data: addresses.map(addressTransformer.summary),
     message: `Endereços retornados com sucesso`,

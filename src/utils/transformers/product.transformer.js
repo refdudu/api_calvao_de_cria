@@ -56,7 +56,10 @@ const productTransformer = {
       isPromotionActive: product.isPromotionActive,
       ...(discountPercentage ? { discountPercentage } : {}),
       mainImage: product.mainImageUrl || null,
-      images: product.images.length > 0 ? product.images : [product.mainImageUrl || null],
+      images:
+        product.images?.length > 0
+          ? product.images.map((img) => img.url)
+          : [product.mainImageUrl || null],
       rating: product.rating,
       stockQuantity: product.stockQuantity,
       createdAt: formatDate(product.createdAt),
