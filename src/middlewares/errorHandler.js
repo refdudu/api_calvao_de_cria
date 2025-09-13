@@ -9,7 +9,6 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // Para erros inesperados (bugs), logamos e enviamos uma msg genérica
   console.error('ERRO INESPERADO 💥', err);
 
   return res.status(500).json({
