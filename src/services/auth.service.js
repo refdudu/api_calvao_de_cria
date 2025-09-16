@@ -40,6 +40,8 @@ const register = async (userData) => {
   };
 
   const newUser = await userRepository.createUser(dataToSave);
+  await cartRepository.create({ userId: newUser._id });
+
   const newUserObj = newUser.toObject ? newUser.toObject() : newUser;
 
   return {

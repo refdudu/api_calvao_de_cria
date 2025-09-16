@@ -224,6 +224,9 @@ const stateRule = () =>
 
 const mongoIdRule = (paramName, message) => param(paramName).isMongoId().withMessage(message);
 
+const mongoIdRuleBody = (fieldName, message) =>
+  body(fieldName).isMongoId().withMessage(message);
+
 const fieldWhitelistRule = (allowedFields) =>
   body('invalidFields').custom((_, { req }) => {
     const receivedFields = Object.keys(req.body);
@@ -246,5 +249,6 @@ module.exports = {
   cepRule,
   stateRule,
   mongoIdRule,
+  mongoIdRuleBody,
   fieldWhitelistRule,
 };
