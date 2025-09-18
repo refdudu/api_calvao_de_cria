@@ -42,6 +42,46 @@ const createOrderTransactional = async (orderData) => {
   }
 };
 
+/**
+ * [ADMIN] Encontra todos os pedidos com filtros, paginação e dados do cliente.
+ * @param {object} filters - Filtros de busca (ex: status, orderNumber).
+ * @param {object} options - Opções de paginação e ordenação.
+ * @returns {Promise<{orders: Document[], total: number}>}
+ */
+const findAllAdmin = async (filters, options) => {
+  const query = Order.find(filters)
+    .populate('userId', 'name email') // Popula dados do cliente
+    .sort(options.sort)
+    .skip(options.skip)
+    .limit(options.limit);
+
+  const orders = await query;
+  const total = await Order.countDocuments(filters);
+  return { orders, total };
+};
+
+/**
+ * [ADMIN] Encontra um pedido pelo ID com os dados do cliente.
+ * @param {string} orderId - O ID do pedido.
+ * @returns {Promise<Document|null>}
+ */
+const findByIdAdmin = async (orderId) => {
+  return Order.findById(orderId).populate('userId', 'name email');
+};
+
+/**
+ * [ADMIN] Atualiza um pedido pelo ID.
+ * @param {string} orderId - O ID do pedido.
+ * @param {object} updateData - Os dados a serem atualizados.
+ * @returns {Promise<Document|null>}
+ */
+const updateByIdAdmin = async (orderId, updateData) => {
+  return Order.findByIdAndUpdate(orderId, { $set: updateData }, { new: true, runValidators: true });
+};
+
 module.exports = {
   createOrderTransactional,
+  findAllAdmin,
+  findByIdAdmin,
+  updateByIdAdmin,
 };

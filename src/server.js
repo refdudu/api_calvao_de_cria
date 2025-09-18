@@ -8,6 +8,8 @@ const userRoutes = require('./routes/user.routes');
 const productRoutes = require('./routes/product.routes');
 const cartRoutes = require('./routes/cart.routes');
 const productAdminRoutes = require('./routes/admin/product.admin.routes');
+const orderAdminRoutes = require('./routes/admin/order.admin.routes');
+
 const cors = require("cors");
 const app = express();
 connectDB();
@@ -23,6 +25,7 @@ app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/cart', cartRoutes);
 
 app.use('/api/v1/admin/products', productAdminRoutes);
+app.use('/api/v1/admin/orders', orderAdminRoutes);
 
 // Rota de teste
 app.get('/', (req, res) => {
