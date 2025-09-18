@@ -79,9 +79,43 @@ const updateByIdAdmin = async (orderId, updateData) => {
   return Order.findByIdAndUpdate(orderId, { $set: updateData }, { new: true, runValidators: true });
 };
 
+/**
+ * [ADMIN] Retorna um resumo dos pedidos de um usuário específico.
+ * @param {string} userId - O ID do usuário.
+ * @returns {Promise<object>}
+ */
+const findSummaryByUserId = async (userId) => {
+  const orders = await Order.find({ userId }).sort({ createdAt: -1 });
+
+  if (orders.length === 0) {
+    return {
+      totalCount: 0,
+      totalValue: 0,
+      lastOrders: [],
+    };
+  }
+
+  const totalValue = orders.reduce((sum, order) => sum + order.totals.total, 0);
+
+  const lastOrders = orders.slice(0, 5).map(order => ({ // Retorna os últimos 5
+    id: order._id,
+    orderNumber: order.orderNumber,
+    status: order.status,
+    total: order.totals.total,
+    createdAt: order.createdAt,
+  }));
+
+  return {
+    totalCount: orders.length,
+    totalValue,
+    lastOrders,
+  };
+};
+
 module.exports = {
   createOrderTransactional,
   findAllAdmin,
   findByIdAdmin,
   updateByIdAdmin,
+  findSummaryByUserId,
 };
