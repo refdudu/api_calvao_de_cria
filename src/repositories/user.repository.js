@@ -53,6 +53,27 @@ const cpfExists = async (cpf) => {
   const user = await User.findOne({ cpf });
   return !!user;
 };
+/**
+ * [ADMIN] Encontra todos os usuários com role 'customer' com filtros e paginação.
+ * @param {object} filters - Filtros de busca (ex: nome, email).
+ * @param {object} options - Opções de paginação e ordenação.
+ * @returns {Promise<{users: Document[], total: number}>}
+ */
+const findAllCustomers = async (filters, options) => {
+  const customerFilters = { ...filters, role: 'customer' };
+
+  const query = User.find(customerFilters)
+    .sort(options.sort)
+    .skip(options.skip)
+    .limit(options.limit);
+
+  const users = await query;
+  const total = await User.countDocuments(customerFilters);
+  return { users, total };
+};
+
+
+
 
 module.exports = {
   findUserByEmail,
@@ -66,4 +87,5 @@ module.exports = {
   updateById,
   emailExists,
   cpfExists,
+  findAllCustomers,
 };

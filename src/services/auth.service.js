@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const userRepository = require('../repositories/user.repository');
+const cartRepository = require('../repositories/cart.repository'); 
 const userTransformer = require('../utils/transformers/user.transformer');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
