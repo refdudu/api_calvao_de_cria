@@ -20,7 +20,7 @@ const couponRules = (isUpdate = false) => [
             return true;
         }
         if (coupon) {
-            return Promise.reject('Este código de cupom já está em uso.');
+            return Promise.reject('Este cupom já existe.');
         }
     }),
 

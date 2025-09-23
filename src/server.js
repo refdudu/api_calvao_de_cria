@@ -11,6 +11,8 @@ const productAdminRoutes = require('./routes/admin/product.admin.routes');
 const orderAdminRoutes = require('./routes/admin/order.admin.routes');
 const userAdminRoutes = require('./routes/admin/user.admin.routes');
 const couponAdminRoutes = require('./routes/admin/coupon.admin.routes'); 
+const paymentMethodAdminRoutes = require('./routes/admin/paymentMethod.admin.routes'); 
+
 
 
 const cors = require("cors");
@@ -33,6 +35,8 @@ app.use('/api/v1/admin/products', productAdminRoutes);
 app.use('/api/v1/admin/orders', orderAdminRoutes);
 app.use('/api/v1/admin/users', userAdminRoutes);
 app.use('/api/v1/admin/coupons', couponAdminRoutes);
+app.use('/api/v1/admin/payment-methods', paymentMethodAdminRoutes); 
+
 
 // Rota de teste
 app.get('/', (req, res) => {
