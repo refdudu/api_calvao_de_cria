@@ -14,7 +14,7 @@ const userAdminRoutes = require('./routes/admin/user.admin.routes');
 const couponAdminRoutes = require('./routes/admin/coupon.admin.routes'); 
 const paymentMethodAdminRoutes = require('./routes/admin/paymentMethod.admin.routes'); 
 
-
+// teste
 
 const cors = require("cors");
 const app = express();
