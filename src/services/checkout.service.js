@@ -5,6 +5,7 @@ const orderRepository = require('../repositories/order.repository');
 const couponRepository = require('../repositories/coupon.repository');
 const AppError = require('../utils/AppError');
 const orderTransformer = require('../utils/transformers/order.transformer');
+const { processPixPayment } = require('./payment/pix.service');
 
 /**
  * Gera um número de pedido sequencial e amigável.
@@ -127,9 +128,28 @@ const createOrder = async (userId, { addressId, paymentMethodIdentifier, couponC
     // Isso garante que todos os totais sejam recalculados com o desconto do cupom.
     const finalCart = await cart.save();
 
+
+    // 6. Gerar o número do pedido
+    const orderNumber = await generateOrderNumber();
+
+    // --- INTEGRAÇÃO DO PAGAMENTO PROFISSIONAL ---
+    // 7. Processar Pagamento
+    let paymentData;
+    if (paymentMethod.identifier === 'pix') {
+        paymentData = await processPixPayment({
+            recipientName: address.recipientName,
+            total: finalCart.total,
+            orderNumber: orderNumber,
+        });
+    } else {
+        throw new AppError('Outros métodos de pagamento ainda não implementados.', 501);
+    }
+    // --- FIM DA INTEGRAÇÃO ---
+
+
     // 6. Estruturar dados do pedido (usando o carrinho agora correto)
     const orderData = {
-        orderNumber: await generateOrderNumber(),
+        orderNumber: orderNumber,
         userId,
         status: 'AWAITING_PAYMENT',
         items: finalCart.items.map(item => ({
@@ -158,12 +178,7 @@ const createOrder = async (userId, { addressId, paymentMethodIdentifier, couponC
             totalDiscount: finalCart.totalDiscount,
             total: finalCart.total,
         },
-        payment: {
-            method: paymentMethod.identifier,
-            // Simulação de dados de pagamento para PIX
-            qrCode: '000201265802BR5913JoaoDaSilva...',
-            qrCodeImageUrl: 'data:image/png;base64,iVBORw0KGgoAAA...',
-        }
+        payment: paymentData
     };
 
     // 7. Criar o pedido de forma transacional

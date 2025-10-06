@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
-// const GUEST_CART_LIFESPAN_SECONDS = 30 * 24 * 60 * 60; // 30 dias
-const GUEST_CART_LIFESPAN_SECONDS = 10
+const GUEST_CART_LIFESPAN_SECONDS = 1 * 24 * 60 * 60; // 30 dias
+// const GUEST_CART_LIFESPAN_SECONDS = 10
 
 const cartItemSchema = new mongoose.Schema(
   {
