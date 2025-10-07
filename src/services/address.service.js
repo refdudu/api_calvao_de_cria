@@ -17,7 +17,7 @@ const listAddressesSummary = async (userId) => {
   const quantity = addresses.length;
 
   return {
-    data: addresses.map(addressTransformer.summary),
+    data: addresses.map(addressTransformer.detailed),
     message: `Endereços retornados com sucesso`,
     details: { totalItens: quantity },
   };
