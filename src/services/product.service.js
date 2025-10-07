@@ -8,6 +8,7 @@ const {
 const listPublicProducts = async (queryParams) => {
   // === FILTROS ===
   const filters = {};
+  const priceFilterConditions = [];
 
   // Filtro por busca no nome do produto (regex case-insensitive)
   if (queryParams.search) {
@@ -21,9 +22,26 @@ const listPublicProducts = async (queryParams) => {
 
   // Filtro por preço mínimo e máximo
   if (queryParams.minPrice || queryParams.maxPrice) {
-    filters.price = {};
-    if (queryParams.minPrice) filters.price.$gte = parseFloat(queryParams.minPrice); // maior ou igual
-    if (queryParams.maxPrice) filters.price.$lte = parseFloat(queryParams.maxPrice); // menor ou igual
+    const priceRangeQuery = {};
+    if (queryParams.minPrice) priceRangeQuery.$gte = parseFloat(queryParams.minPrice);
+    if (queryParams.maxPrice) priceRangeQuery.$lte = parseFloat(queryParams.maxPrice);
+
+    // Condição 1: Verifica o promotionalPrice se a promoção estiver ativa
+    priceFilterConditions.push({
+      isPromotionActive: true,
+      promotionalPrice: priceRangeQuery,
+    });
+
+    // Condição 2: Verifica o price normal se a promoção estiver inativa
+    priceFilterConditions.push({
+      isPromotionActive: { $ne: true }, // $ne: true cobre false e null/undefined
+      price: priceRangeQuery,
+    });
+
+    // Adiciona a lógica $or ao filtro principal, se houver condições de preço
+    if (priceFilterConditions.length > 0) {
+      filters.$or = priceFilterConditions;
+    }
   }
 
   // === PAGINAÇÃO E ORDENAÇÃO ===
