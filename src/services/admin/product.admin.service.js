@@ -9,8 +9,8 @@ const {
 const MAX_IMAGES = 5;
 
 const DEFAULT_IMAGE = {
-  url: 'https://res.cloudinary.com/da8t2uqtc/image/upload/v1756135821/download_on1b4w.jpg',
-  public_id: 'download_on1b4w',
+  url: 'https://res.cloudinary.com/da8t2uqtc/image/upload/v1759800581/unnamed_ccmpf2.jpg',
+  public_id: 'unnamed_ccmpf2',
 };
 
 const normalizeImage = async (img) => {
