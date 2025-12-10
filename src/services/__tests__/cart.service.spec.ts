@@ -1,18 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ICartItem } from '../../models/cart.model';
+import { ProductFactory } from '../../tests/factories';
 
 // Mock dependencies BEFORE import to prevent side-effects during module load
 vi.mock('../repositories/cart.repository', () => ({
   default: {},
-  CartRepository: class {},
+  CartRepository: class { },
 }));
 vi.mock('../repositories/product.repository', () => ({
   default: {},
-  ProductRepository: class {},
+  ProductRepository: class { },
 }));
 vi.mock('../repositories/coupon.repository', () => ({
   default: {},
-  CouponRepository: class {},
+  CouponRepository: class { },
 }));
 
 import { CartService } from '../cart.service';
@@ -48,15 +49,15 @@ describe('CartService', () => {
 
   describe('addItemToCart', () => {
     it('should calculate totals correctly when adding item', async () => {
-      const mockProduct = {
-        _id: 'prod1',
+      const mockProduct = ProductFactory.build({
+        _id: 'prod1' as any,
         name: 'Product 1',
         price: 100,
         promotionalPrice: 90,
         isPromotionActive: true,
         stockQuantity: 10,
         mainImageUrl: 'url',
-      };
+      });
       mockProductRepo.findByIdPublic.mockResolvedValue(mockProduct);
 
       const mockCart = {
@@ -66,6 +67,7 @@ describe('CartService', () => {
         save: vi.fn().mockReturnThis(),
       };
       mockCartRepo.findByIdentifier.mockResolvedValue(mockCart);
+
 
       const result = await cartService.addItemToCart(
         { userId: 'user1' },
@@ -94,10 +96,10 @@ describe('CartService', () => {
     });
 
     it('should throw 409 if stock is insufficient', async () => {
-      const mockProduct = {
-        _id: 'prod1',
+      const mockProduct = ProductFactory.build({
+        _id: 'prod1' as any,
         stockQuantity: 1,
-      };
+      });
       mockProductRepo.findByIdPublic.mockResolvedValue(mockProduct);
 
       const mockCart = {
