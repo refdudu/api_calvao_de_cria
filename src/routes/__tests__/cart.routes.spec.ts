@@ -29,7 +29,7 @@ describe('Cart Routes Integration', () => {
       mainImageUrl: 'http://img.com/1.jpg',
       isActive: true,
     });
-    productId = product._id.toString();
+    productId = (product._id as string).toString();
   });
 
   const generateToken = (userId: string) => {
@@ -62,7 +62,7 @@ describe('Cart Routes Integration', () => {
         cpf: '12345678901',
         phone: '123456789',
       });
-      const token = generateToken(user._id.toString());
+      const token = generateToken((user._id as string).toString() || '');
 
       const res = await request(app)
         .post('/api/v1/cart/items')

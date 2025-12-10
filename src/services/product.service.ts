@@ -29,8 +29,8 @@ export class ProductService implements IProductService {
     // Filtro por preço mínimo e máximo
     if (queryParams.minPrice || queryParams.maxPrice) {
       const priceRangeQuery: any = {};
-      if (queryParams.minPrice) priceRangeQuery.$gte = parseFloat(queryParams.minPrice);
-      if (queryParams.maxPrice) priceRangeQuery.$lte = parseFloat(queryParams.maxPrice);
+      if (queryParams.minPrice) {priceRangeQuery.$gte = parseFloat(queryParams.minPrice);}
+      if (queryParams.maxPrice) {priceRangeQuery.$lte = parseFloat(queryParams.maxPrice);}
 
       // Condição 1: Verifica o promotionalPrice se a promoção estiver ativa
       const condition1 = {

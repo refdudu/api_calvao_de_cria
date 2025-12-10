@@ -20,8 +20,8 @@ export class UserController {
     const result = await this.userService.getUserProfile(req.user!.id);
     const response = new ResponseBuilder()
       .withStatus('success')
-      .withData(result.user)
-      .withMessage(result.message || '')
+      .withData(result.data)
+      .withMessage(result.message)
       .build();
     res.status(200).json(response);
   });
@@ -38,7 +38,7 @@ export class UserController {
       const response = new ResponseBuilder()
         .withStatus('success')
         .withData(result.data)
-        .withMessage(result.message || '')
+        .withMessage(result.message)
         .build();
       res.status(200).json(response);
     }
@@ -48,7 +48,7 @@ export class UserController {
     const result = await this.userService.changePassword(req.user!.id, req.body.newPassword);
     const response = new ResponseBuilder()
       .withStatus('success')
-      .withMessage(result.message || '')
+      .withMessage(result.message)
       .build();
     res.status(200).json(response);
   });

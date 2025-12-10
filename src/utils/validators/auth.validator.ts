@@ -47,7 +47,7 @@ export const registerRules = (): ValidationChain[] => [
     .withMessage(ERROR_MESSAGES.user.cpf.numeric)
     .bail()
     .custom((value: string) => {
-      if (!cpf.isValid(value)) throw new Error(ERROR_MESSAGES.user.cpf.invalid);
+      if (!cpf.isValid(value)) {throw new Error(ERROR_MESSAGES.user.cpf.invalid);}
       return true;
     })
     .bail()

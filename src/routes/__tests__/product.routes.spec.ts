@@ -41,7 +41,7 @@ describe('Product Routes Integration', () => {
 
       expect(res.status).toBe(200);
       expect(res.body.data.name).toBe('Detail Product');
-      expect(res.body.data.id).toBe(product._id.toString());
+      expect(res.body.data.id).toBe((product._id as string).toString());
     });
 
     it('should return 404 for non-existent product ID', async () => {

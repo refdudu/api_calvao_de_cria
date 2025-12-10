@@ -46,7 +46,7 @@ const cartTransformer = {
    * estrutura limpa para a resposta da API.
    */
   transform: (cart: ICart | null) => {
-    if (!cart) return null;
+    if (!cart) {return null;}
 
     // --- LÓGICA REORDENADA ---
     // 1. Começa com o ID principal do carrinho.

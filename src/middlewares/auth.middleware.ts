@@ -4,6 +4,7 @@ import AppError from '../utils/AppError';
 import asyncHandler from '../utils/asyncHandler';
 import userRepository from '../repositories/user.repository';
 import dotenv from 'dotenv';
+import { AuthenticatedUser } from '../types/express';
 
 dotenv.config();
 
@@ -60,7 +61,7 @@ export const restrictTo = (...roles: string[]) => {
       );
     }
 
-    req.user = freshUser;
+    req.user = freshUser as AuthenticatedUser;
     next();
   });
 };

@@ -31,7 +31,7 @@ export class PixService implements IPixService {
       '52040000', // Merchant Category Code
       '5303986', // Transaction Currency (BRL)
       `54${formattedValue.length.toString().padStart(2, '0')}${formattedValue}`,
-      `5802BR`,
+      '5802BR',
       `59${formattedName.length.toString().padStart(2, '0')}${formattedName}`,
       `60${merchantCity.length.toString().padStart(2, '0')}${merchantCity}`,
       `62${(transactionId.length + 7).toString().padStart(2, '0')}05${transactionId.length.toString().padStart(2, '0')}${transactionId}`,

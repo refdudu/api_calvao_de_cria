@@ -11,8 +11,8 @@ const connectDB = async (): Promise<void> => {
     }
     await mongoose.connect(mongoUri);
     console.log('MongoDB Conectado com Sucesso!');
-  } catch (error: any) {
-    console.error('Erro ao conectar com o MongoDB:', error.message);
+  } catch (error) {
+    if (error instanceof Error) console.error('Erro ao conectar com o MongoDB:', error.message);
     // Encerra o processo da aplicação com status de falha
     process.exit(1);
   }

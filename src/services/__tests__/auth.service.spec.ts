@@ -49,13 +49,13 @@ describe('AuthService', () => {
       // Assert
       expect(userRepository.createUser).toHaveBeenCalledTimes(1);
       expect(cartRepository.create).toHaveBeenCalledWith({ userId: expect.anything() });
-      expect(result.data.userId).toBeDefined();
-      expect(result.data.tokens).toBeDefined();
-      expect(result.data.email).toBe(userData.email);
+      expect(result.data.user).toBeDefined();
+      expect(result.data.accessToken).toBeDefined();
+      expect(result.data.user.email).toBe(userData.email);
     });
 
     it('should throw error if repository fails (e.g. duplicate email)', async () => {
-      const userData = { email: 'duplicate@test.com', password: '123' };
+      const userData = { email: 'duplicate@test.com', password: '123', name: 'New User' };
       vi.mocked(userRepository.createUser).mockRejectedValue(new Error('Duplicate key'));
 
       await expect(authService.register(userData)).rejects.toThrow('Duplicate key');
@@ -76,8 +76,8 @@ describe('AuthService', () => {
       const result = await authService.login('test@example.com', passwordPlain);
 
       // Assert
-      expect(result.data.tokens).toHaveProperty('accessToken');
-      expect(result.data.tokens).toHaveProperty('refreshToken');
+      expect(result.data.accessToken).toBeDefined();
+      expect(result.data.refreshToken).toBeDefined();
       expect(userRepository.updateById).toHaveBeenCalled(); // Should update refresh token hash
     });
 

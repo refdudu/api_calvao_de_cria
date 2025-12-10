@@ -94,7 +94,7 @@ export class CartService implements ICartService {
 
   async getCart(identifier: CartIdentifier) {
     const { cart } = await this.getOrCreateCart(identifier);
-    return { data: cartTransformer.transform(cart) };
+    return { data: cartTransformer.transform(cart), message: '' };
   }
 
   async addItemToCart(
@@ -102,7 +102,9 @@ export class CartService implements ICartService {
     { productId, quantity }: { productId: string; quantity: number }
   ) {
     const product = await this.productRepository.findByIdPublic(productId);
-    if (!product) throw new AppError('Produto não encontrado.', 404);
+    if (!product) {
+      throw new AppError('Produto não encontrado.', 404);
+    }
 
     const { cart, newGuestCartId } = await this.getOrCreateCart(identifier);
     let details: any = null;
@@ -146,7 +148,7 @@ export class CartService implements ICartService {
 
     const updatedCart = await cart.save();
 
-    return { data: cartTransformer.transform(updatedCart), newGuestCartId, details };
+    return { data: cartTransformer.transform(updatedCart), newGuestCartId, details, message: '' };
   }
 
   async updateItemQuantity(identifier: CartIdentifier, productId: string, quantity: number) {
@@ -154,12 +156,17 @@ export class CartService implements ICartService {
     let details: any = null;
 
     const itemIndex = cart.items.findIndex((item) => item.productId.toString() === productId);
-    if (itemIndex === -1) throw new AppError('Produto não encontrado no carrinho.', 404);
+    if (itemIndex === -1) {
+      throw new AppError('Produto não encontrado no carrinho.', 404);
+    }
 
     const product = await this.productRepository.findByIdPublic(productId);
-    if (!product) throw new AppError('Produto não existe mais no catálogo.', 404);
-    if (product.stockQuantity < quantity)
+    if (!product) {
+      throw new AppError('Produto não existe mais no catálogo.', 404);
+    }
+    if (product.stockQuantity < quantity) {
       throw new AppError('A nova quantidade excede o estoque disponível.', 409);
+    }
 
     const item = cart.items[itemIndex];
     item.quantity = quantity;
@@ -172,7 +179,7 @@ export class CartService implements ICartService {
 
     const updatedCart = await cart.save();
 
-    return { data: cartTransformer.transform(updatedCart), details };
+    return { data: cartTransformer.transform(updatedCart), details, message: '' };
   }
 
   async removeItemFromCart(identifier: CartIdentifier, productId: string) {
@@ -182,8 +189,9 @@ export class CartService implements ICartService {
     const initialLength = cart.items.length;
     cart.items = cart.items.filter((item) => item.productId.toString() !== productId);
 
-    if (cart.items.length === initialLength)
+    if (cart.items.length === initialLength) {
       throw new AppError('Produto não encontrado no carrinho.', 404);
+    }
 
     const couponValidation = await this.revalidateCouponOnCart(cart);
     if (!couponValidation.isValid) {
@@ -192,14 +200,14 @@ export class CartService implements ICartService {
 
     const updatedCart = await cart.save();
 
-    return { data: cartTransformer.transform(updatedCart), details };
+    return { data: cartTransformer.transform(updatedCart), details, message: '' };
   }
 
   async mergeCarts(userId: string, guestCartId: string) {
     const guestCart = await this.cartRepository.findByGuestCartId(guestCartId);
     if (!guestCart || guestCart.items.length === 0) {
       const { cart: userCart } = await this.getOrCreateCart({ userId });
-      return { data: cartTransformer.transform(userCart) };
+      return { data: cartTransformer.transform(userCart), message: '' };
     }
 
     const { cart: userCart } = await this.getOrCreateCart({ userId });
@@ -221,7 +229,7 @@ export class CartService implements ICartService {
     const updatedUserCart = await userCart.save();
     await this.cartRepository.deleteByGuestCartId(guestCartId);
 
-    return { data: cartTransformer.transform(updatedUserCart) };
+    return { data: cartTransformer.transform(updatedUserCart), message: '' };
   }
 
   async applyCoupon(identifier: CartIdentifier, couponCode: string) {
@@ -233,7 +241,9 @@ export class CartService implements ICartService {
       0
     );
 
-    if (!coupon) throw new AppError('Cupom inválido ou expirado.', 404);
+    if (!coupon) {
+      throw new AppError('Cupom inválido ou expirado.', 404);
+    }
     if (subtotalAfterItemDiscounts < coupon.minPurchaseValue) {
       throw new AppError(
         `O valor mínimo da compra para usar este cupom é de R$ ${coupon.minPurchaseValue.toFixed(2)}.`,
@@ -259,12 +269,11 @@ export class CartService implements ICartService {
     const { cart } = await this.getOrCreateCart(identifier);
 
     cart.couponDiscount = 0;
-    cart.activeCouponCode = undefined;
-    cart.couponInfo = undefined;
-
+    cart.couponCode = null;
+    cart.couponDiscount = 0;
     const updatedCart = await cart.save();
 
-    return { data: cartTransformer.transform(updatedCart) };
+    return { data: cartTransformer.transform(updatedCart), message: '' };
   }
 }
 

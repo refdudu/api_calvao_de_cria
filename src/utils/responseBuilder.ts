@@ -12,7 +12,7 @@ class ResponseBuilder {
     return this;
   }
 
-  withMessage(message: string): this {
+  withMessage(message: string | null | undefined): this {
     this.response.message = message;
     return this;
   }

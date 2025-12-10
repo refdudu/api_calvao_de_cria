@@ -27,8 +27,8 @@ export class ProductAdminService implements IProductAdminService {
   constructor(private productRepository: IProductRepository) {}
 
   private async normalizeImage(img: any) {
-    if (img.public_id) return img;
-    if (img.url) return await storage.uploadFromUrl(img.url);
+    if (img.public_id) {return img;}
+    if (img.url) {return await storage.uploadFromUrl(img.url);}
     throw new AppError('Imagem inválida ou URL incorreta', 400);
   }
 
@@ -66,7 +66,7 @@ export class ProductAdminService implements IProductAdminService {
       images.push(...uploadedUrls);
     }
 
-    if (images.length === 0) images.push(DEFAULT_IMAGE);
+    if (images.length === 0) {images.push(DEFAULT_IMAGE);}
 
     const newProduct = { ...productData, images };
     const product = await this.productRepository.create(newProduct);
@@ -81,7 +81,7 @@ export class ProductAdminService implements IProductAdminService {
   // -------------------- LIST PRODUCTS --------------------
   async listProducts(queryParams: any) {
     const filters: any = {};
-    if (queryParams.search) filters.name = { $regex: queryParams.search, $options: 'i' };
+    if (queryParams.search) {filters.name = { $regex: queryParams.search, $options: 'i' };}
 
     const limit = parseInt(queryParams.limit, 10) || 10;
     const page = parseInt(queryParams.page, 10) || 1;
@@ -109,7 +109,7 @@ export class ProductAdminService implements IProductAdminService {
   // -------------------- PRODUCT DETAILS --------------------
   async productDetails(productId: string) {
     const product = await this.productRepository.findByIdPublic(productId);
-    if (!product) throw new AppError('Produto não encontrado.', 404);
+    if (!product) {throw new AppError('Produto não encontrado.', 404);}
 
     return {
       data: productTransformer.transformProductForAdmin(product),
@@ -121,7 +121,7 @@ export class ProductAdminService implements IProductAdminService {
   // -------------------- UPDATE PRODUCT --------------------
   async updateProduct(productId: string, updateData: any) {
     const product = await this.productRepository.updateById(productId, updateData);
-    if (!product) throw new AppError('Produto não encontrado.', 404);
+    if (!product) {throw new AppError('Produto não encontrado.', 404);}
 
     return {
       data: productTransformer.transformProductForAdmin(product),
@@ -133,7 +133,7 @@ export class ProductAdminService implements IProductAdminService {
   // -------------------- DELETE PRODUCT --------------------
   async deleteProduct(productId: string) {
     const product = await this.productRepository.hardDeleteById(productId);
-    if (!product) throw new AppError('Produto não encontrado.', 404);
+    if (!product) {throw new AppError('Produto não encontrado.', 404);}
 
     return {
       data: null,
@@ -145,7 +145,7 @@ export class ProductAdminService implements IProductAdminService {
   // -------------------- UPDATE PRODUCT IMAGES --------------------
   async updateProductImages(productId: string, ids: any) {
     const product = await this.productRepository.findByIdAdmin(productId);
-    if (!product) throw new AppError('Produto não encontrado', 404);
+    if (!product) {throw new AppError('Produto não encontrado', 404);}
 
     const currentIds = product.images.map((img) => img._id?.toString());
 
@@ -184,7 +184,7 @@ export class ProductAdminService implements IProductAdminService {
       mainImageUrl: mainImageUrl,
     });
 
-    if (!updatedProduct) throw new AppError('Erro ao atualizar imagens', 500);
+    if (!updatedProduct) {throw new AppError('Erro ao atualizar imagens', 500);}
 
     return {
       data: productTransformer.transformProductForAdmin(updatedProduct),
@@ -195,7 +195,7 @@ export class ProductAdminService implements IProductAdminService {
   // -------------------- ADD PRODUCT IMAGES --------------------
   async addProductImages(productId: string, rawData: any, files?: any[]) {
     const product = await this.productRepository.findByIdAdmin(productId);
-    if (!product) throw new AppError('Produto não encontrado', 404);
+    if (!product) {throw new AppError('Produto não encontrado', 404);}
 
     const productData = { ...rawData };
     if (productData.images && typeof productData.images === 'string') {
@@ -226,7 +226,7 @@ export class ProductAdminService implements IProductAdminService {
       imagesToAdd.push(...uploadedUrls);
     }
 
-    if (imagesToAdd.length === 0) throw new AppError('Nenhuma imagem enviada', 400);
+    if (imagesToAdd.length === 0) {throw new AppError('Nenhuma imagem enviada', 400);}
 
     product.images.push(...imagesToAdd);
     await this.productRepository.updateById(productId, product);
@@ -241,7 +241,7 @@ export class ProductAdminService implements IProductAdminService {
   // -------------------- DELETE PRODUCT IMAGES --------------------
   async deleteProductImages(productId: string, ids: any) {
     const product = await this.productRepository.findByIdAdmin(productId);
-    if (!product) throw new AppError('Produto não encontrado', 404);
+    if (!product) {throw new AppError('Produto não encontrado', 404);}
 
     const currentIds = product.images.map((img) => img._id?.toString());
 

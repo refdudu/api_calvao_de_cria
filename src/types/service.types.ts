@@ -1,7 +1,6 @@
 /**
- * Standard service response types used across all services
+ * Standard service response structure for all service layer methods
  */
-
 export interface ServiceResponse<T = any> {
   data: T | null;
   message?: string | null;

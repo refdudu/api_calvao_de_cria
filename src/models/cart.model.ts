@@ -31,6 +31,7 @@ export interface ICart extends Document {
   expireAt?: Date;
   createdAt: Date;
   updatedAt: Date;
+  couponCode: string | null;
 }
 
 const cartItemSchema = new Schema<ICartItem>(

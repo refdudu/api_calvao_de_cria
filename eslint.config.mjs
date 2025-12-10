@@ -1,28 +1,62 @@
 import js from '@eslint/js';
 import globals from 'globals';
-import { defineConfig } from 'eslint/config';
+import tseslint from '@typescript-eslint/eslint-plugin';
+import tsparser from '@typescript-eslint/parser';
 
-export default defineConfig([
+export default [
+  {
+    ignores: ['dist/**', 'node_modules/**', 'coverage/**', '*.config.js'],
+  },
+  js.configs.recommended,
   {
     files: ['**/*.{js,mjs,cjs}'],
     languageOptions: {
       globals: {
-        ...globals.node, // habilita variáveis globais do Node (require, process, __dirname, etc.)
+        ...globals.node,
       },
       ecmaVersion: 'latest',
-      sourceType: 'commonjs', // já que você está usando require()
+      sourceType: 'module',
     },
-    plugins: { js },
-    extends: ['js/recommended', 'plugin:prettier/recommended'],
     rules: {
-      quotes: ['error', 'single'], // força uso de aspas simples 'a'
-      semi: ['error', 'always'], // força ponto e vírgula
-      'no-unused-vars': ['warn'], // avisa sobre variáveis declaradas mas não usadas
-      'no-console': 'off', // desativa bloqueio de console.log
-      eqeqeq: ['error', 'always'], // força uso de === em vez de ==
-      curly: ['error', 'all'], // força sempre usar chaves em if/while/for
-      'no-var': 'error', // proíbe var, use let/const
-      'prefer-const': 'error', // sugere const sempre que possível
+      quotes: ['warn', 'single'],
+      semi: ['error', 'always'],
+      'no-unused-vars': ['warn'],
+      'no-console': 'off',
+      eqeqeq: ['error', 'always'],
+      curly: ['warn', 'all'],
+      'no-var': 'error',
+      'prefer-const': 'error',
     },
   },
-]);
+  {
+    files: ['src/**/*.ts'],
+    languageOptions: {
+      parser: tsparser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
+      globals: {
+        ...globals.node,
+      },
+    },
+    plugins: {
+      '@typescript-eslint': tseslint,
+    },
+    rules: {
+      quotes: ['warn', 'single'],
+      semi: ['error', 'always'],
+      'no-unused-vars': 'off', // Disable base rule for TS
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
+      'no-console': 'off',
+      eqeqeq: ['error', 'always'],
+      curly: ['warn', 'all'],
+      'no-var': 'error',
+      'prefer-const': 'error',
+      '@typescript-eslint/no-explicit-any': 'warn',
+    },
+  },
+];

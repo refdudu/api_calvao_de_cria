@@ -39,7 +39,7 @@ export class AddressService implements IAddressService {
 
     return {
       data: addresses.map(addressTransformer.detailed),
-      message: `Endereços retornados com sucesso`,
+      message: 'Endereços retornados com sucesso',
       details: { totalItens: quantity },
     };
   }
@@ -47,7 +47,7 @@ export class AddressService implements IAddressService {
   async getAddressDetails(addressId: string, userId: string) {
     const address = await this.addressRepository.findAddressByIdAndUserIdDetail(addressId, userId);
     if (!address)
-      throw new AppError('Endereço não encontrado ou não pertence a este usuário.', 404);
+      {throw new AppError('Endereço não encontrado ou não pertence a este usuário.', 404);}
     return {
       data: addressTransformer.detailed(address),
       message: 'Detalhes do endereço obtidos com sucesso.',
@@ -58,7 +58,7 @@ export class AddressService implements IAddressService {
   async updateAddress(addressId: string, userId: string, updateData: Partial<IAddress>) {
     const address = await this.addressRepository.updateAddress(addressId, userId, updateData);
     if (!address)
-      throw new AppError('Endereço não encontrado ou não pertence a este usuário.', 404);
+      {throw new AppError('Endereço não encontrado ou não pertence a este usuário.', 404);}
     return {
       data: addressTransformer.detailed(address),
       message: 'Endereço atualizado com sucesso.',
@@ -69,7 +69,7 @@ export class AddressService implements IAddressService {
   async removeAddress(addressId: string, userId: string) {
     const deleted = await this.addressRepository.deleteAddress(addressId, userId);
     if (!deleted)
-      throw new AppError('Endereço não encontrado ou não pertence a este usuário.', 404);
+      {throw new AppError('Endereço não encontrado ou não pertence a este usuário.', 404);}
     return {
       data: null,
       message: 'Endereço removido com sucesso.',

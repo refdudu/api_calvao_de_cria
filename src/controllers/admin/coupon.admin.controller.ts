@@ -6,7 +6,7 @@ import ResponseBuilder from '../../utils/responseBuilder';
 export class CouponAdminController {
   constructor(private adminCouponService: ICouponAdminService) {}
 
-  listCoupons = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  listCoupons = asyncHandler(async (req: Request, res: Response) => {
     const result = await this.adminCouponService.listCoupons(req.query);
     res
       .status(200)
@@ -20,7 +20,7 @@ export class CouponAdminController {
       );
   });
 
-  createCoupon = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  createCoupon = asyncHandler(async (req: Request, res: Response) => {
     const result = await this.adminCouponService.createCoupon(req.body);
     res
       .status(201)
@@ -33,7 +33,7 @@ export class CouponAdminController {
       );
   });
 
-  getCouponDetails = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  getCouponDetails = asyncHandler(async (req: Request, res: Response) => {
     const { couponId } = req.params;
     const result = await this.adminCouponService.getCouponDetails(couponId);
     res
@@ -47,7 +47,7 @@ export class CouponAdminController {
       );
   });
 
-  updateCoupon = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  updateCoupon = asyncHandler(async (req: Request, res: Response) => {
     const { couponId } = req.params;
     const result = await this.adminCouponService.updateCoupon(couponId, req.body);
     res
@@ -61,7 +61,7 @@ export class CouponAdminController {
       );
   });
 
-  deleteCoupon = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  deleteCoupon = asyncHandler(async (req: Request, res: Response) => {
     const { couponId } = req.params;
     await this.adminCouponService.deleteCoupon(couponId);
     res.status(204).send();

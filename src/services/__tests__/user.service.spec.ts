@@ -32,8 +32,8 @@ describe('UserService', () => {
       const result = await userService.getUserProfile('user123');
 
       expect(userRepository.findById).toHaveBeenCalledWith('user123');
-      expect(result.user.name).toBe('John Doe');
-      expect(result.user).not.toHaveProperty('passwordHash');
+      expect(result.data.name).toBe('John Doe');
+      expect(result.data).not.toHaveProperty('passwordHash');
     });
 
     it('should throw 404 if user not found', async () => {

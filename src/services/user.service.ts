@@ -16,14 +16,14 @@ export class UserService implements IUserService {
 
   async getUserProfile(userId: string) {
     const user = await this.userRepository.findById(userId);
+
     if (!user) {
       throw new AppError('Usuário não encontrado.', 404);
     }
 
     return {
-      user: userTransformer.detailed(user),
-      tokens: null,
-      message: null,
+      data: userTransformer.detailed(user),
+      message: '',
       details: null,
     };
   }
@@ -35,7 +35,6 @@ export class UserService implements IUserService {
     }
     return {
       data: userTransformer.detailed(updatedUser),
-      tokens: null,
       message: 'Perfil atualizado com sucesso.',
       details: null,
     };
@@ -47,8 +46,7 @@ export class UserService implements IUserService {
     await this.userRepository.updateById(userId, { currentRefreshTokenHash: undefined });
 
     return {
-      user: null,
-      tokens: null,
+      data: null,
       message: 'Senha alterada com sucesso.',
       details: null,
     };

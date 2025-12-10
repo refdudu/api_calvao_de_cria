@@ -15,9 +15,9 @@ class CloudinaryStorage implements IStorageProvider {
       const stream = cloudinary.uploader.upload_stream(
         { folder: 'products', public_id: filename },
         (err, result) => {
-          if (err) reject(err);
-          else if (result) resolve({ url: result.secure_url, public_id: result.public_id });
-          else reject(new Error('Upload failed, no result returned'));
+          if (err) {reject(err);}
+          else if (result) {resolve({ url: result.secure_url, public_id: result.public_id });}
+          else {reject(new Error('Upload failed, no result returned'));}
         }
       );
       stream.end(buffer); // envia o buffer

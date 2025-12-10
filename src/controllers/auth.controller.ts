@@ -10,7 +10,7 @@ export class AuthController {
     const result = await this.authService.register(req.body);
     const response = new ResponseBuilder()
       .withStatus('success')
-      .withMessage(result.message || '')
+      .withMessage(result.message)
       .withData(result.data)
       .withDetails(result.details)
       .build();
@@ -21,7 +21,7 @@ export class AuthController {
     const result = await this.authService.login(req.body.email, req.body.password);
     const response = new ResponseBuilder()
       .withStatus('success')
-      .withMessage(result.message || '')
+      .withMessage(result.message)
       .withData(result.data)
       .withDetails(result.details)
       .build();
@@ -32,7 +32,7 @@ export class AuthController {
     const result = await this.authService.logout(req.user!.id);
     const response = new ResponseBuilder()
       .withStatus('success')
-      .withMessage(result.message || '')
+      .withMessage(result.message)
       .withData(result.data)
       .withDetails(result.details)
       .build();
@@ -43,7 +43,7 @@ export class AuthController {
     const result = await this.authService.refreshAccessToken(req.body.refreshToken);
     const response = new ResponseBuilder()
       .withStatus('success')
-      .withMessage(result.message || '')
+      .withMessage(result.message)
       .withData(result.data)
       .withDetails(result.details)
       .build();

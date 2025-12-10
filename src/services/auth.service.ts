@@ -55,7 +55,7 @@ export class AuthService implements IAuthService {
   }
 
   async register(userData: IRegisterDTO) {
-    const { password, role, ...restUserData } = userData;
+    const { password, ...restUserData } = userData;
     const passwordHash = await bcrypt.hash(password, 10);
 
     const userId = new mongoose.Types.ObjectId();
@@ -76,8 +76,12 @@ export class AuthService implements IAuthService {
     await this.cartRepository.create({ userId: new Types.ObjectId(newUser.id) });
 
     return {
-      data: userTransformer.loginOrRegister(newUser, { accessToken, refreshToken }),
-      message: null,
+      data: {
+        user: userTransformer.summary(newUser),
+        accessToken,
+        refreshToken,
+      },
+      message: undefined,
       details: null,
     };
   }
@@ -96,7 +100,11 @@ export class AuthService implements IAuthService {
     await this.userRepository.updateById(user.id, { currentRefreshTokenHash: refreshTokenHash });
 
     return {
-      data: userTransformer.loginOrRegister(user, { accessToken, refreshToken }),
+      data: {
+        user: userTransformer.summary(user),
+        accessToken,
+        refreshToken,
+      },
       message: null,
       details: null,
     };
@@ -140,8 +148,11 @@ export class AuthService implements IAuthService {
     );
 
     return {
-      data: { accessToken, refreshToken: token },
-      message: null,
+      data: {
+        accessToken,
+        refreshToken: token,
+      },
+      message: undefined,
       details: null,
     };
   }

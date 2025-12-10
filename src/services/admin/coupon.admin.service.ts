@@ -44,19 +44,19 @@ export class CouponAdminService implements ICouponAdminService {
 
   async getCouponDetails(couponId: string) {
     const coupon = await this.couponRepository.findById(couponId);
-    if (!coupon) throw new AppError('Cupom não encontrado.', 404);
+    if (!coupon) {throw new AppError('Cupom não encontrado.', 404);}
     return { data: coupon, message: 'Detalhes do cupom retornados com sucesso.' };
   }
 
   async updateCoupon(couponId: string, updateData: Partial<ICoupon>) {
     const coupon = await this.couponRepository.updateById(couponId, updateData);
-    if (!coupon) throw new AppError('Cupom não encontrado.', 404);
+    if (!coupon) {throw new AppError('Cupom não encontrado.', 404);}
     return { data: coupon, message: 'Cupom atualizado com sucesso.' };
   }
 
   async deleteCoupon(couponId: string) {
     const coupon = await this.couponRepository.deleteById(couponId);
-    if (!coupon) throw new AppError('Cupom não encontrado.', 404);
+    if (!coupon) {throw new AppError('Cupom não encontrado.', 404);}
     return { data: null, message: 'Cupom deletado com sucesso.' };
   }
 }

@@ -169,7 +169,7 @@ export const birthDateRule = (): ValidationChain =>
     .custom((value: string) => {
       const birthDate = new Date(value);
       const today = new Date();
-      if (birthDate > today) throw new Error(ERROR_MESSAGES.user.birthDate.futureDate);
+      if (birthDate > today) {throw new Error(ERROR_MESSAGES.user.birthDate.futureDate);}
 
       let age = today.getFullYear() - birthDate.getFullYear();
       const m = today.getMonth() - birthDate.getMonth();
