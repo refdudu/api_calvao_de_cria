@@ -26,14 +26,14 @@ describe('Admin Routes Integration', () => {
       email: 'admin@test.com',
       password: 'password123',
     });
-    adminToken = adminLogin.body.data.tokens.accessToken;
+    adminToken = adminLogin.body.data.accessToken;
 
     // Login Customer
     const customerLogin = await request(app).post('/api/v1/auth/login').send({
       email: 'customer@test.com',
       password: 'password123',
     });
-    customerToken = customerLogin.body.data.tokens.accessToken;
+    customerToken = customerLogin.body.data.accessToken;
   });
 
   describe('RBAC / Security', () => {

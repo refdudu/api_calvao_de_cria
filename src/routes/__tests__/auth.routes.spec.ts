@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '../../app';
-import { beforeAll, afterEach, describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { UserFactory } from '../../tests/factories';
 import mongoose from 'mongoose';
 import { cpf as cpfValidator } from 'cpf-cnpj-validator';
@@ -21,10 +21,10 @@ describe('Auth Routes Integration', () => {
       const res = await request(app).post('/api/v1/auth/register').send(userData);
 
       expect(res.status).toBe(201);
-      expect(res.body.data.userId).toBeDefined();
-      expect(res.body.data.email).toBe(userData.email);
-      expect(res.body.data.tokens).toHaveProperty('accessToken');
-      expect(res.body.data.tokens).toHaveProperty('refreshToken');
+      expect(res.body.data.user.userId).toBeDefined();
+      expect(res.body.data.user.email).toBe(userData.email);
+      expect(res.body.data.accessToken).toBeDefined();
+      expect(res.body.data.refreshToken).toBeDefined();
 
       // Side-effect verification: User persisted in DB
       const createdUser = await mongoose.model('User').findOne({ email: userData.email });
@@ -34,7 +34,7 @@ describe('Auth Routes Integration', () => {
     });
 
     it('should fail with validation error for duplicate email', async () => {
-      const user = await UserFactory.create({ email: 'duplicate@test.com' });
+      await UserFactory.create({ email: 'duplicate@test.com' });
       const userData = {
         name: 'Duplicate',
         email: 'duplicate@test.com',
@@ -63,7 +63,7 @@ describe('Auth Routes Integration', () => {
 
   describe('POST /api/v1/auth/login', () => {
     it('should login successfully valid credentials', async () => {
-      const user = await UserFactory.create({
+      await UserFactory.create({
         email: 'login@test.com',
       });
 
@@ -73,8 +73,8 @@ describe('Auth Routes Integration', () => {
       });
 
       expect(res.status).toBe(200);
-      expect(res.body.data.tokens).toHaveProperty('accessToken');
-      expect(res.body.data.tokens).toHaveProperty('refreshToken');
+      expect(res.body.data.accessToken).toBeDefined();
+      expect(res.body.data.refreshToken).toBeDefined();
     });
 
     it('should fail with invalid credentials', async () => {
