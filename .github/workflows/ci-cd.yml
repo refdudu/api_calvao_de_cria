@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, develop,renan]
+    branches: [main, develop, renan]
   pull_request:
-    branches: [main, develop,renan]
+    branches: [main, develop, renan]
 
 jobs:
   build-and-test:
@@ -34,7 +34,7 @@ jobs:
       - name: Run linter
         run: npm run lint
 
-      # 5. Run tests with Vitest and MongoMemoryServer
+      # 5. Run tests
       - name: Run tests
         run: npm test
         env:
@@ -43,3 +43,21 @@ jobs:
       # 6. TypeScript build check
       - name: Build check
         run: npm run build
+
+      # --- NOVOS PASSOS DE WEBHOOK ---
+
+      # 7. Notificação de Sucesso
+      - name: Webhook Success Notification
+        if: success()
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d '{"content": "✅ **SUCESSO:** O Pipeline de CI/CD passou!\nRepo: ${{ github.repository }}\nCommit: ${{ github.sha }}\nBranch: ${{ github.ref_name }}"}' \
+          ${{ secrets.WEBHOOK_URL }}
+
+      # 8. Notificação de Falha
+      - name: Webhook Failure Notification
+        if: failure()
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d '{"content": "❌ **FALHA:** O Pipeline de CI/CD quebrou.\nRepo: ${{ github.repository }}\nCommit: ${{ github.sha }}\nVerifique os logs no GitHub Actions."}' \
+          ${{ secrets.WEBHOOK_URL }}
