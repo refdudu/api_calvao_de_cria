@@ -1,5 +1,7 @@
 # API Calvão de Cria 🛒
 
+![CI/CD Pipeline](https://github.com/GabrielJ10/api_calvao_de_cria/actions/workflows/ci-cd.yml/badge.svg)
+
 API RESTful desenvolvida em **Node.js + Express**, simulando um sistema de e-commerce com funcionalidades de autenticação, carrinho, checkout, cupons de desconto, produtos e gestão de usuários.
 
 ---
@@ -28,11 +30,12 @@ API RESTful desenvolvida em **Node.js + Express**, simulando um sistema de e-com
 
 1.  **Clone este repositório**:
     ```bash
-    git clone [https://github.com/seu-usuario/api_calvao_de_cria.git](https://github.com/seu-usuario/api_calvao_de_cria.git)
+    git clone https://github.com/GabrielJ10/api_calvao_de_cria.git
     cd api_calvao_de_cria
     ```
 
 2.  **Instale as dependências**:
+
     ```bash
     npm install
     ```

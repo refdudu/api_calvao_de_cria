@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import Cart from '../../models/cart.model';
+import Cart, { ICart, ICartItem } from '../../models/cart.model';
 
 /**
  * Cart Factory
@@ -16,5 +16,24 @@ export const CartFactory = {
       ...overrides,
     };
     return Cart.create(defaultCart);
+  },
+
+  // Build a mock cart object without saving to DB (for unit tests)
+  build: (overrides: Partial<ICart> = {}) => {
+    return {
+      _id: new mongoose.Types.ObjectId(),
+      userId: new mongoose.Types.ObjectId(),
+      items: [] as ICartItem[],
+      subtotal: 0,
+      total: 0,
+      itemsDiscount: 0,
+      couponDiscount: 0,
+      activeCouponCode: undefined,
+      guestCartId: undefined,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      save: () => Promise.resolve(this),
+      ...overrides,
+    } as unknown as ICart & { save: () => Promise<ICart> };
   },
 };
