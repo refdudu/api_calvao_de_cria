@@ -282,10 +282,13 @@ function buildCardPayload(reportJson, counts, repo, ref, runUrl, emoji, label) {
 
 (async function main() {
   const reportPath = process.argv[2] || 'test-report.json';
-  const vitestReportPath = process.argv[2] || 'test-report.json';
-  const cypressReportPath = process.argv[3] || process.env.CYPRESS_REPORT || null;
+  const rawArgs = process.argv.slice(2);
+  const flags = rawArgs.filter((a) => a.startsWith('--'));
+  const paths = rawArgs.filter((a) => !a.startsWith('--'));
+  const vitestReportPath = paths[0] || 'test-report.json';
+  const cypressReportPath = paths[1] || process.env.CYPRESS_REPORT || null;
   const webhookUrl = process.env.GOOGLE_CHAT_WEBHOOK_URL || DEFAULT_GOOGLE_CHAT_WEBHOOK_URL;
-  const dryRun = process.env.DRY_RUN === '1' || process.argv.includes('--dry-run');
+  const dryRun = process.env.DRY_RUN === '1' || flags.includes('--dry-run');
 
   if (!webhookUrl) {
     console.error('No Google Chat webhook URL available. Skipping notification.');
