@@ -45,6 +45,16 @@ jobs:
           NODE_ENV: test
         continue-on-error: true
 
+      # Run Cypress tests (generate JSON report)
+      - name: Run Cypress (generate JSON report)
+        id: run_cypress
+        run: |
+          echo '{}' > cypress-report.json
+          npx cypress run --headless --reporter json > cypress-report.json || true
+        env:
+          NODE_ENV: test
+        continue-on-error: true
+
       # 6. TypeScript build check
       - name: Build check
         run: npm run build
@@ -57,7 +67,7 @@ jobs:
         env:
           GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
         run: |
-          node scripts/google-chat-notify.js test-report.json || true
+          node scripts/google-chat-notify.js test-report.json cypress-report.json || true
 
       # 8. Fail job if tests failed
       - name: Fail if tests failed

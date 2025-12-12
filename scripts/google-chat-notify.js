@@ -157,12 +157,12 @@ function escapeHtml(str) {
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-function buildCardPayload(reportJson, counts, repo, ref, runUrl, emoji) {
+function buildCardPayload(reportJson, counts, repo, ref, runUrl, emoji, label) {
   const { total = 0, passed = 0, failed = 0 } = counts || {};
-  const title = `${emoji} Test result: ${failed > 0 ? 'Some tests failed' : 'All tests passed'}`;
   const subtitle = repo ? `${repo} ${ref ? `- ${ref}` : ''}` : ref || '';
   const statusText = failed > 0 ? 'FAILED' : 'SUCCESS';
   const statusColor = failed > 0 ? '#D32F2F' : '#2E7D32';
+  const title = `${emoji} ${label || 'Tests'} result: ${statusText}`;
 
   // Build a compact HTML for the detailed list
   // compute test run duration (earliest start to latest end)
@@ -282,6 +282,8 @@ function buildCardPayload(reportJson, counts, repo, ref, runUrl, emoji) {
 
 (async function main() {
   const reportPath = process.argv[2] || 'test-report.json';
+  const vitestReportPath = process.argv[2] || 'test-report.json';
+  const cypressReportPath = process.argv[3] || process.env.CYPRESS_REPORT || null;
   const webhookUrl = process.env.GOOGLE_CHAT_WEBHOOK_URL || DEFAULT_GOOGLE_CHAT_WEBHOOK_URL;
   const dryRun = process.env.DRY_RUN === '1' || process.argv.includes('--dry-run');
 
@@ -295,91 +297,63 @@ function buildCardPayload(reportJson, counts, repo, ref, runUrl, emoji) {
     console.log('No env webhook found; using hardcoded default webhook');
   }
 
-  const reportJson = safeParseJson(reportPath);
-  if (!reportJson) {
-    console.error('No valid test report JSON found. Exiting without sending notification.');
-    process.exit(0);
-  }
-
-  const counts = findCounts(reportJson);
-  const total = counts.total || 0;
-  const passed = counts.passed || 0;
-  const failed = counts.failed || 0;
-  const emoji = failed > 0 ? '❌' : '✅';
-
   const repo = process.env.GITHUB_REPOSITORY || '';
   const ref = process.env.GITHUB_REF || '';
   const runUrl = process.env.GITHUB_RUN_ID ? `https://github.com/${repo}/actions/runs/${process.env.GITHUB_RUN_ID}` : '';
 
-  let message = `${emoji} Test result: ${failed > 0 ? 'Some tests failed' : 'All tests passed'}\n`;
-  message += `• Total: ${total}\n`;
-  message += `• Passed: ${passed}\n`;
-  message += `• Failed: ${failed}`;
-  if (runUrl) {
-    message += `\n• Details: ${runUrl}`;
-  }
-  if (ref) {
-    message += `\n• Ref: ${ref}`;
-  }
-  // Build per-test list (used for fallback plain-text logging)
-  message += '\n\nDetailed test list:';
+  async function processAndSend(reportPath, label) {
+    if (!reportPath) {
+      return;
+    }
+    const reportJsonLocal = safeParseJson(reportPath);
+    if (!reportJsonLocal) {
+      console.warn(`No valid report found at ${reportPath}; skipping ${label || 'report'}`);
+      return;
+    }
 
-  try {
-    if (Array.isArray(reportJson.testResults)) {
-      for (const fileResult of reportJson.testResults) {
-        const filePath = fileResult.name || '';
-        // Determine tag by path
-        const getTag = (p) => {
-          if (/tests[/\\]integration/.test(p)) {
-            return 'integration';
-          }
-          if (/tests[/\\]unit/.test(p)) {
-            return 'unit';
-          }
-          if (/tests[/\\]e2e/.test(p)) {
-            return 'e2e';
-          }
-          return 'other';
-        };
-        const tag = getTag(filePath);
-        // Short file path for readability
-        const shortFilePath = filePath.replace(/^.*?tests[/\\]/i, 'tests/');
-        if (Array.isArray(fileResult.assertionResults)) {
-          for (const a of fileResult.assertionResults) {
-            const status = (a.status || '').toLowerCase();
-            const statusEmoji = status === 'passed' ? '✅' : status === 'failed' ? '❌' : '⚪';
-            // Full test name: ancestorTitles + title
-            const fullTitle = ((a.ancestorTitles || []).join(' > ') + (a.ancestorTitles && a.ancestorTitles.length ? ' > ' : '') + (a.title || '')).trim();
-            message += `\n• [${tag}] ${fullTitle} — ${statusEmoji} ${status.toUpperCase()} (${shortFilePath})`;
-          }
-        }
+    const countsLocal = findCounts(reportJsonLocal);
+    const totalLocal = countsLocal.total || 0;
+    const passedLocal = countsLocal.passed || 0;
+    const failedLocal = countsLocal.failed || 0;
+    const emojiLocal = failedLocal > 0 ? '❌' : '✅';
+
+    // Build fallback plain text message
+    let messageLocal = `${emojiLocal} ${label || 'Tests'} result: ${failedLocal > 0 ? 'Some tests failed' : 'All tests passed'}\n`;
+    messageLocal += `• Total: ${totalLocal}\n`;
+    messageLocal += `• Passed: ${passedLocal}\n`;
+    messageLocal += `• Failed: ${failedLocal}`;
+    if (runUrl) {
+      messageLocal += `\n• Details: ${runUrl}`;
+    }
+    if (ref) {
+      messageLocal += `\n• Ref: ${ref}`;
+    }
+
+    // Build card payload
+    const cardPayloadLocal = buildCardPayload(reportJsonLocal, countsLocal, repo, ref, runUrl, emojiLocal, label);
+
+    try {
+      if (dryRun) {
+        console.log(`DRY RUN: would send ${label || 'tests'} payload to Google Chat:`);
+        console.log(JSON.stringify(cardPayloadLocal, null, 2));
+      } else {
+        const result = await sendToGoogleChat(webhookUrl, cardPayloadLocal);
+        console.log(`Notification sent for ${label || 'tests'}:`, result.status);
+      }
+    } catch (err) {
+      console.error(`Failed to send card for ${label || 'tests'}, retrying as plain text:`, err && err.message);
+      try {
+        const fallbackResult = await sendToGoogleChat(webhookUrl, { text: messageLocal });
+        console.log('Fallback notification sent:', fallbackResult.status);
+      } catch (err2) {
+        console.error('Failed to send fallback notification:', err2 && err2.message);
       }
     }
-  } catch (err) {
-    // Do not abort; append a simple fallback
-    message += `\n\nCould not build detailed test list: ${err && err.message}`;
   }
 
-  // Build card payload and send
-  const cardPayload = buildCardPayload(reportJson, counts, repo, ref, runUrl, emoji);
-  try {
-    if (dryRun) {
-      console.log('DRY RUN enabled — would send payload:');
-      console.log(JSON.stringify(cardPayload, null, 2));
-    } else {
-      const result = await sendToGoogleChat(webhookUrl, cardPayload);
-      console.log('Notification sent to Google Chat:', result.status);
-    }
-  } catch (err) {
-    // Fallback: try sending a plain text message to the webhook
-    console.error('Failed to send card to Google Chat, retrying as plain text message:', err && err.message);
-    try {
-      const fallbackResult = await sendToGoogleChat(webhookUrl, { text: message });
-      console.log('Fallback notification sent to Google Chat:', fallbackResult.status);
-    } catch (err2) {
-      console.error('Failed to send notification to Google Chat:', err2 && err2.message);
-    }
-  }
+  // Run for vitest report (default) and optional cypress report
+  await processAndSend(vitestReportPath, 'Unit/Integration Tests');
+  await processAndSend(cypressReportPath, 'Cypress E2E Tests');
 
   // Avoid failing the script in case of errors sending notification; keep exit 0
   process.exit(0);
