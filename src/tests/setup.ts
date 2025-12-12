@@ -16,7 +16,7 @@ beforeAll(async () => {
 
   process.env.ACCESS_TOKEN_SECRET = 'test_access_secret';
   process.env.REFRESH_TOKEN_SECRET = 'test_refresh_secret';
-});
+}, 60000); // Timeout de 60 segundos para download do MongoDB na primeira vez
 
 afterEach(async () => {
   if (mongoose.connection.readyState !== 0) {
@@ -33,4 +33,4 @@ afterAll(async () => {
   if (replSet) {
     await replSet.stop();
   }
-});
+}, 30000); // Timeout de 30 segundos para garantir limpeza adequada
