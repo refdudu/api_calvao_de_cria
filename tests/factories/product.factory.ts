@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import Product, { IProduct } from '../../models/product.model';
+import Product, { IProduct } from '../../src/models/product.model';
 import { v4 as uuidv4 } from 'uuid';
 
 /**

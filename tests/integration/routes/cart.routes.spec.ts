@@ -1,13 +1,13 @@
 import request from 'supertest';
 import { describe, it, expect, beforeEach, vi, beforeAll } from 'vitest';
-import app from '../../app';
+import app from '../../../src/app';
 import jwt from 'jsonwebtoken';
-import { ProductFactory, UserFactory } from '../../tests/factories';
-import Cart from '../../models/cart.model';
+import { ProductFactory, UserFactory } from '../../factories';
+import Cart from '../../../src/models/cart.model';
 import mongoose from 'mongoose';
 
 // Since we have src/services/storage/__mocks__/cloudinaryStorage.ts, we can use vi.mock.
-vi.mock('../../services/storage/cloudinaryStorage');
+vi.mock('../../../src/services/storage/cloudinaryStorage');
 
 const TEST_SECRET = 'testsecret';
 

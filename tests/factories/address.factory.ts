@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import Address from '../../models/address.model';
+import Address from '../../src/models/address.model';
 
 /**
  * Address Factory

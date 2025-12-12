@@ -1,16 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { OrderStatus } from '../../enums/order.enum';
+import { OrderStatus } from '../../../src/enums/order.enum';
 
 // Mock dependencies BEFORE import
-vi.mock('../repositories/cart.repository', () => ({ default: {} }));
-vi.mock('../repositories/address.repository', () => ({ default: {} }));
-vi.mock('../repositories/paymentMethod.repository', () => ({ default: {} }));
-vi.mock('../repositories/order.repository', () => ({ default: {} }));
-vi.mock('../repositories/coupon.repository', () => ({ default: {} }));
-vi.mock('./payment/pix.service', () => ({ default: {} }));
+vi.mock('../../../src/repositories/cart.repository', () => ({ default: {} }));
+vi.mock('../../../src/repositories/address.repository', () => ({ default: {} }));
+vi.mock('../../../src/repositories/paymentMethod.repository', () => ({ default: {} }));
+vi.mock('../../../src/repositories/order.repository', () => ({ default: {} }));
+vi.mock('../../../src/repositories/coupon.repository', () => ({ default: {} }));
+vi.mock('../../../src/services/payment/pix.service', () => ({ default: {} }));
 
-import { CheckoutService } from '../checkout.service';
-import AppError from '../../utils/AppError';
+import { CheckoutService } from '../../../src/services/checkout.service';
+import AppError from '../../../src/utils/AppError';
 
 // Mocks
 const mockCartRepo = {

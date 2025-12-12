@@ -1,7 +1,7 @@
 import request from 'supertest';
-import app from '../../app';
+import app from '../../../src/app';
 import { describe, it, expect } from 'vitest';
-import { ProductFactory } from '../../tests/factories';
+import { ProductFactory } from '../../factories';
 
 describe('Product Routes Integration', () => {
   describe('GET /api/v1/products', () => {

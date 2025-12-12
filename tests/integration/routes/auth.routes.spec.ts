@@ -1,7 +1,7 @@
 import request from 'supertest';
-import app from '../../app';
+import app from '../../../src/app';
 import { describe, it, expect } from 'vitest';
-import { UserFactory } from '../../tests/factories';
+import { UserFactory } from '../../factories';
 import mongoose from 'mongoose';
 import { cpf as cpfValidator } from 'cpf-cnpj-validator';
 

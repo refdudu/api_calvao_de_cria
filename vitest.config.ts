@@ -4,9 +4,9 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    setupFiles: ['./src/tests/setup.ts'],
+    setupFiles: ['./tests/setup.ts'],
     testTimeout: 20000,
     exclude: ['**/node_modules/**', '**/dist/**', '**/*.js'],
-    include: ['src/**/*.spec.ts'],
+    include: ['tests/**/*.spec.ts', 'src/**/*.spec.ts'],
   },
 });

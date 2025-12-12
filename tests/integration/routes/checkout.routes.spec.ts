@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { describe, it, expect, beforeEach, vi, beforeAll } from 'vitest';
-import { OrderStatus } from '../../enums/order.enum';
-import app from '../../app';
+import { OrderStatus } from '../../../src/enums/order.enum';
+import app from '../../../src/app';
 import jwt from 'jsonwebtoken';
 import {
   UserFactory,
@@ -9,15 +9,15 @@ import {
   AddressFactory,
   CartFactory,
   PaymentMethodFactory,
-} from '../../tests/factories';
-import Cart from '../../models/cart.model';
-import Order from '../../models/order.model';
+} from '../../factories';
+import Cart from '../../../src/models/cart.model';
+import Order from '../../../src/models/order.model';
 import mongoose from 'mongoose';
 
 // Ensure cloudinary is mocked
-vi.mock('../../services/storage/cloudinaryStorage');
+vi.mock('../../../src/services/storage/cloudinaryStorage');
 // Mock PixService module to return fake qrcode.
-vi.mock('../../services/payment/pix.service', () => ({
+vi.mock('../../../src/services/payment/pix.service', () => ({
   default: {
     processPixPayment: vi.fn().mockResolvedValue({
       method: 'pix',

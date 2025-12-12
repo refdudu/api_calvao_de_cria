@@ -1,4 +1,4 @@
-import PaymentMethod from '../../models/paymentMethod.model';
+import PaymentMethod from '../../src/models/paymentMethod.model';
 
 /**
  * PaymentMethod Factory

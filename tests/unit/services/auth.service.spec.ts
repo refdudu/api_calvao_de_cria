@@ -1,18 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import authService from '../auth.service';
-import userRepository from '../../repositories/user.repository';
-import cartRepository from '../../repositories/cart.repository';
-import { UserFactory } from '../../tests/factories';
-import AppError from '../../utils/AppError';
+// Mock Dependencies
+vi.mock('../../../src/repositories/user.repository');
+vi.mock('../../../src/repositories/cart.repository');
+vi.mock('../../../src/utils/email'); // Mock Email class
+import authService from '../../../src/services/auth.service';
+import userRepository from '../../../src/repositories/user.repository';
+import cartRepository from '../../../src/repositories/cart.repository';
+import { UserFactory } from '../../factories';
+import AppError from '../../../src/utils/AppError';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import Email from '../../utils/email';
-
-// Mock Dependencies
-vi.mock('../../repositories/user.repository');
-vi.mock('../../repositories/cart.repository');
-vi.mock('../../utils/email'); // Mock Email class
+import Email from '../../../src/utils/email';
 
 describe('AuthService', () => {
   // Config vars

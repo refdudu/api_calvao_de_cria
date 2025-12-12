@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import User, { IUser } from '../../models/user.model';
+import User, { IUser } from '../../src/models/user.model';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 

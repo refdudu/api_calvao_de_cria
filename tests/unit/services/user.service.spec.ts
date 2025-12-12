@@ -1,11 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import userService from '../user.service';
-import userRepository from '../../repositories/user.repository';
-import { UserFactory } from '../../tests/factories';
-import bcrypt from 'bcryptjs';
-
 // Mock Dependencies
-vi.mock('../../repositories/user.repository');
+vi.mock('../../../src/repositories/user.repository');
+import userService from '../../../src/services/user.service';
+import userRepository from '../../../src/repositories/user.repository';
+import { UserFactory } from '../../factories';
+import bcrypt from 'bcryptjs';
 
 // Mock bcryptjs default export
 vi.mock('bcryptjs', () => {

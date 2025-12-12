@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import Cart, { ICart, ICartItem } from '../../models/cart.model';
+import Cart, { ICart, ICartItem } from '../../src/models/cart.model';
 
 /**
  * Cart Factory

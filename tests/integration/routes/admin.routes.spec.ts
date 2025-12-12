@@ -1,7 +1,7 @@
 import request from 'supertest';
-import app from '../../app';
+import app from '../../../src/app';
 import { describe, it, expect, beforeEach } from 'vitest';
-import { UserFactory, ProductFactory } from '../../tests/factories';
+import { UserFactory, ProductFactory } from '../../factories';
 import mongoose from 'mongoose';
 
 describe('Admin Routes Integration', () => {

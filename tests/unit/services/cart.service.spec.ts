@@ -1,23 +1,23 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ICartItem } from '../../models/cart.model';
-import { ProductFactory } from '../../tests/factories';
+import { ICartItem } from '../../../src/models/cart.model';
+import { ProductFactory } from '../../factories';
 
 // Mock dependencies BEFORE import to prevent side-effects during module load
-vi.mock('../repositories/cart.repository', () => ({
+vi.mock('../../../src/repositories/cart.repository', () => ({
   default: {},
   CartRepository: class { },
 }));
-vi.mock('../repositories/product.repository', () => ({
+vi.mock('../../../src/repositories/product.repository', () => ({
   default: {},
   ProductRepository: class { },
 }));
-vi.mock('../repositories/coupon.repository', () => ({
+vi.mock('../../../src/repositories/coupon.repository', () => ({
   default: {},
   CouponRepository: class { },
 }));
 
-import { CartService } from '../cart.service';
-import AppError from '../../utils/AppError';
+import { CartService } from '../../../src/services/cart.service';
+import AppError from '../../../src/utils/AppError';
 
 // Mocks
 const mockCartRepo = {

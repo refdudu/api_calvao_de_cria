@@ -1,11 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import productService from '../product.service';
-import productRepository from '../../repositories/product.repository';
-import { ProductFactory } from '../../tests/factories';
-import AppError from '../../utils/AppError';
-
 // Mock Dependencies
-vi.mock('../../repositories/product.repository');
+vi.mock('../../../src/repositories/product.repository');
+import productService from '../../../src/services/product.service';
+import productRepository from '../../../src/repositories/product.repository';
+import { ProductFactory } from '../../factories';
+import AppError from '../../../src/utils/AppError';
 
 describe('ProductService', () => {
   beforeEach(() => {
