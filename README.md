@@ -74,3 +74,43 @@ src/
 npm start: Inicia o servidor em modo de produção.
 
 npm run dev: Inicia o servidor em modo de desenvolvimento (requer configuração com nodemon ou similar).
+
+---
+## ✅ Testes
+
+- Framework: `Vitest` (configurado em `vitest.config.ts`).
+- Estrutura de testes:
+    - `tests/integration/` — testes de integração que usam `supertest` para chamar rotas e `mongodb-memory-server` para uma instância MongoDB em memória.
+    - `tests/unit/` — testes unitários (services, utils, etc).
+    - `tests/factories/` — fábricas utilizadas pelos testes para criar modelos sintéticos.
+    - `tests/setup.ts` — configuração global (Mongo Memory Server, variáveis de ambiente usadas nos testes).
+
+- Rodando os testes localmente (gera `test-report.json`):
+
+    Linux/macOS (Linux shell):
+    ```bash
+    npm test
+    # ou
+    npx vitest --run --reporter json > test-report.json
+    ```
+
+    Windows (PowerShell):
+    ```powershell
+    npx vitest --run --reporter json > test-report.json
+    ```
+
+- Relatório: `npm test` foi configurado para gerar `test-report.json` na raiz do projeto (formato JSON, compatível com o script de notificação).
+
+- Notificação via Google Chat:
+    - Script: `scripts/google-chat-notify.js` — Node.js puro (usa `https` e `fs`) que lê `test-report.json`, calcula total, sucessos e falhas, e publica no webhook do Google Chat.
+    - Execução manual (PowerShell):
+    ```powershell
+    $env:GOOGLE_CHAT_WEBHOOK_URL='https://chat.googleapis.com/...' ; node scripts/google-chat-notify.js test-report.json
+    ```
+    - O script também aceita a ausência da variável de ambiente e usa um webhook hardcoded como fallback.
+
+- CI: O workflow do GitHub Actions está em `.github/workflows/ci-cd.yml`.
+    - Ele instala dependências, roda linter, executa os testes (gerando `test-report.json`) e chama o script de notificação.
+    - Para segurança, recomenda-se configurar `GOOGLE_CHAT_WEBHOOK_URL` como um `secret` no repositório do GitHub (Settings → Secrets → Actions).
+
+---
