@@ -11,7 +11,7 @@ vi.mock('../../../src/services/storage/cloudinaryStorage');
 
 const TEST_SECRET = 'testsecret';
 
-describe('Cart Routes Integration', () => {
+describe('Rotas de Carrinho - Integração', () => {
   let productId: string;
 
   beforeAll(() => {
@@ -19,7 +19,7 @@ describe('Cart Routes Integration', () => {
   });
 
   beforeEach(async () => {
-    // Seed Product using factory
+    // Criar produto usando factory
     const product = await ProductFactory.create({
       name: 'Integration Test Product',
       price: 100,
@@ -36,25 +36,25 @@ describe('Cart Routes Integration', () => {
   };
 
   describe('POST /api/v1/cart/items', () => {
-    it('should create a guest cart if no token provided', async () => {
+    it('deve criar carrinho de visitante quando não há token', async () => {
       const res = await request(app).post('/api/v1/cart/items').send({ productId, quantity: 1 });
 
       expect(res.status).toBe(200);
       expect(res.body.data.items).toHaveLength(1);
-      // expect(res.body.guestCartId).toBeDefined(); // Depending on implementation details
-      // Check header or extra property
+      // expect(res.body.guestCartId).toBeDefined(); // Dependendo da implementação
+      // Verifica header ou propriedade extra
       const guestCartId =
         res.body.data.guestCartId || res.body.guestCartId || res.headers['x-guest-cart-id-created'];
       expect(guestCartId).toBeDefined();
 
-      // Verify DB
+      // Verifica no banco
       const cart = await Cart.findOne({ guestCartId });
       expect(cart).toBeDefined();
       expect(cart?.items[0].productId.toString()).toBe(productId);
     });
 
-    it('should add item to user cart if token provided', async () => {
-      // Create user using factory
+    it('deve adicionar item ao carrinho do usuário logado', async () => {
+      // Criar usuário usando factory
       const user = await UserFactory.create({
         email: 'carttest@example.com',
       });
@@ -69,7 +69,7 @@ describe('Cart Routes Integration', () => {
       expect(res.body.data.items).toHaveLength(1);
       expect(res.body.data.items[0].quantity).toBe(2);
 
-      // Verify DB
+      // Verifica no banco
       const cart = await Cart.findOne({ userId: user._id });
       expect(cart).toBeDefined();
     });

@@ -50,7 +50,7 @@ describe('CheckoutService', () => {
   });
 
   describe('previewCoupon', () => {
-    it('should apply fixed discount correctly', async () => {
+    it('deve aplicar desconto fixo corretamente', async () => {
       const mockCart = {
         items: [{ id: '1', quantity: 1, totalItemPrice: 100 }],
         subtotal: 100,
@@ -72,7 +72,7 @@ describe('CheckoutService', () => {
       expect(result.data.total).toBe(90);
     });
 
-    it('should error if minimum purchase value not met', async () => {
+    it('deve dar erro quando valor mínimo de compra não é atingido', async () => {
       const mockCart = {
         items: [{ id: '1', quantity: 1, totalItemPrice: 40 }],
         subtotal: 40,
@@ -93,8 +93,8 @@ describe('CheckoutService', () => {
   });
 
   describe('createOrder', () => {
-    it('should generate order number correctly', async () => {
-      // Mock data setup
+    it('deve gerar número do pedido corretamente', async () => {
+      // Configuração dos mocks
       const mockCart = {
         items: [{ productId: 'p1', quantity: 1, unitPrice: 100, totalItemPrice: 100 }],
         subtotal: 100,
@@ -132,25 +132,24 @@ describe('CheckoutService', () => {
         payment: { method: 'pix', qrCodeImageUrl: 'url', qrCode: 'code' },
       });
 
-      // Force a specific date to predictable order prefix test if needed,
-      // code uses new Date() internally so difficult to assert exact prefix without mocking Date.
-      // We assume logic holds.
+      // Forçar uma data específica para teste de prefixo de pedido é difícil,
+      // pois o código usa new Date() internamente. Assumimos que a lógica está correta.
 
       await checkoutService.createOrder('user1', {
         addressId: 'addr1',
         paymentMethodIdentifier: 'pix',
       });
 
-      expect(mockCart.activeCouponCode).toBeUndefined(); // No coupon sent
+      expect(mockCart.activeCouponCode).toBeUndefined(); // Sem cupom enviado
       expect(mockOrderRepo.createOrderTransactional).toHaveBeenCalled();
-      // logic for order number: last was 0001, so this should use 0002 internally
-      // However, since we mock findLastByDatePrefix, we can just check if createOrderTransactional
-      // was called with an object containing an orderNumber.
+      // Lógica do orderNumber: último foi 0001, então deve usar 0002 internamente
+      // Como mockamos findLastByDatePrefix, apenas verificamos se createOrderTransactional
+      // foi chamado com um objeto contendo orderNumber.
       const orderCall = mockOrderRepo.createOrderTransactional.mock.calls[0][0];
       expect(orderCall.orderNumber).toMatch(/-\d{4}$/);
     });
 
-    it('should throw 500 if payment gateway fails (Sad Path)', async () => {
+    it('deve lançar 500 quando gateway de pagamento falha', async () => {
       // 1. Setup (Arrange)
       const mockCart = {
         items: [{ productId: 'p1', quantity: 1, unitPrice: 100, totalItemPrice: 100 }],
@@ -160,14 +159,14 @@ describe('CheckoutService', () => {
         activeCouponCode: undefined,
         save: vi.fn().mockReturnThis(),
       };
-      
+
       // Mocks de dependências para chegar até o momento do pagamento
       mockCartRepo.findByIdentifier.mockResolvedValue(mockCart);
       mockAddressRepo.findAddressByIdAndUserIdDetail.mockResolvedValue({ recipientName: 'Test' });
       mockPaymentRepo.findByIdentifier.mockResolvedValue({ identifier: 'pix', isEnabled: true });
       mockOrderRepo.findLastByDatePrefix.mockResolvedValue({ orderNumber: '20231206-0001' });
 
-      // 2. Simular o erro no serviço de PIX (AQUI ESTÁ O "SAD PATH")
+      // 2. Simular o erro no serviço de PIX (AQUI ESTÁ O CAMINHO TRISTE)
       const errorMsg = 'Gateway de pagamento indisponível';
       mockPixService.processPixPayment.mockRejectedValue(new Error(errorMsg));
 
@@ -184,7 +183,7 @@ describe('CheckoutService', () => {
       expect(mockOrderRepo.createOrderTransactional).not.toHaveBeenCalled();
     });
 
-    it('should clear cart after order creation (Bug Fix: Infinite Cart)', async () => {
+    it('deve limpar carrinho após criar pedido (Correção de Bug: Carrinho Infinito)', async () => {
       // Setup
       const mockCart = {
         items: [{ productId: 'p1', quantity: 1, unitPrice: 100, totalItemPrice: 100 }],
@@ -240,10 +239,10 @@ describe('CheckoutService', () => {
       // Verificações
       // 1. O pedido foi criado com sucesso
       expect(result.data.orderNumber).toBe('20231206-0002');
-      
+
       // 2. Verifica que createOrderTransactional foi chamado (ele internamente limpa o carrinho)
       expect(mockOrderRepo.createOrderTransactional).toHaveBeenCalled();
-      
+
       // 3. Verifica que o save do carrinho foi chamado apenas uma vez (para aplicar cupom/recalcular)
       // OBS: A limpeza do carrinho agora é feita dentro de createOrderTransactional
       expect(mockCart.save).toHaveBeenCalledOnce();

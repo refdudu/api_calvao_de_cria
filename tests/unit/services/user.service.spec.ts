@@ -24,7 +24,7 @@ describe('UserService', () => {
   });
 
   describe('getUserProfile', () => {
-    it('should return user profile if found', async () => {
+    it('deve retornar perfil do usuário quando encontrado', async () => {
       const user = UserFactory.build({ _id: 'user123' as any, name: 'John Doe' });
       vi.mocked(userRepository.findById).mockResolvedValue(user as any);
 
@@ -35,7 +35,7 @@ describe('UserService', () => {
       expect(result.data).not.toHaveProperty('passwordHash');
     });
 
-    it('should throw 404 if user not found', async () => {
+    it('deve lançar 404 quando usuário não é encontrado', async () => {
       vi.mocked(userRepository.findById).mockResolvedValue(null);
 
       await expect(userService.getUserProfile('invalid_id')).rejects.toThrow(
@@ -45,7 +45,7 @@ describe('UserService', () => {
   });
 
   describe('updateUserProfile', () => {
-    it('should update user profile successfully', async () => {
+    it('deve atualizar perfil do usuário com sucesso', async () => {
       const updatedUser = UserFactory.build({ _id: 'user123' as any, name: 'New Name' });
       vi.mocked(userRepository.updateById).mockResolvedValue(updatedUser as any);
 
@@ -56,7 +56,7 @@ describe('UserService', () => {
       expect(result.data.name).toBe('New Name');
     });
 
-    it('should throw 500 if update fails (returns null)', async () => {
+    it('deve lançar 500 quando atualização falha (retorna null)', async () => {
       vi.mocked(userRepository.updateById).mockResolvedValue(null);
 
       await expect(userService.updateUserProfile('user123', { name: 'Fail' })).rejects.toThrow(
@@ -66,16 +66,16 @@ describe('UserService', () => {
   });
 
   describe('changePassword', () => {
-    it('should change password successfully', async () => {
-      // Mock updateById to return something truthy
+    it('deve alterar senha com sucesso', async () => {
+      // Mock updateById para retornar algo truthy
       vi.mocked(userRepository.updateById).mockResolvedValue({} as any);
 
       const result = await userService.changePassword('user123', 'NewPass123!');
 
-      // Verify password was hashed
+      // Verifica se a senha foi criptografada
       expect(bcrypt.hash).toHaveBeenCalledWith('NewPass123!', 10);
 
-      // Verify repository calls
+      // Verifica chamadas ao repositório
       expect(userRepository.updateById).toHaveBeenCalledWith('user123', {
         passwordHash: 'hashed_password_mock',
       });

@@ -3,10 +3,10 @@ import app from '../../../src/app';
 import { describe, it, expect } from 'vitest';
 import { ProductFactory } from '../../factories';
 
-describe('Product Routes Integration', () => {
+describe('Rotas de Produtos - Integração', () => {
   describe('GET /api/v1/products', () => {
-    it('should return a paginated list of products', async () => {
-      // Seed products
+    it('deve retornar lista paginada de produtos', async () => {
+      // Criar produtos
       await ProductFactory.create({ name: 'Product A', price: 100, isActive: true });
       await ProductFactory.create({ name: 'Product B', price: 200, isActive: true });
 
@@ -17,7 +17,7 @@ describe('Product Routes Integration', () => {
       expect(res.body.details.totalItems).toBe(2);
     });
 
-    it('should filter products by name', async () => {
+    it('deve filtrar produtos pelo nome', async () => {
       await ProductFactory.create({ name: 'UniqueName', price: 100, isActive: true });
       await ProductFactory.create({ name: 'Other', price: 100, isActive: true });
 
@@ -30,7 +30,7 @@ describe('Product Routes Integration', () => {
   });
 
   describe('GET /api/v1/products/:productId', () => {
-    it('should return product details for valid ID', async () => {
+    it('deve retornar detalhes do produto com ID válido', async () => {
       const product = await ProductFactory.create({
         name: 'Detail Product',
         price: 50,
@@ -44,8 +44,8 @@ describe('Product Routes Integration', () => {
       expect(res.body.data.id).toBe((product._id as string).toString());
     });
 
-    it('should return 404 for non-existent product ID', async () => {
-      // Generate a valid Mongo ID that doesn't exist
+    it('deve retornar 404 para ID inexistente', async () => {
+      // Gerar um ID Mongo válido que não existe
       const fakeId = '507f1f77bcf86cd799439011';
 
       const res = await request(app).get(`/api/v1/products/${fakeId}`);

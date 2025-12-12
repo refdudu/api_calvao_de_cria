@@ -30,7 +30,7 @@ vi.mock('../../../src/services/payment/pix.service', () => ({
 
 const TEST_SECRET = 'testsecret';
 
-describe('Checkout Routes Integration', () => {
+describe('Rotas de Checkout - Integração', () => {
   let productId: string;
   let userId: string;
   let token: string;
@@ -41,23 +41,23 @@ describe('Checkout Routes Integration', () => {
   });
 
   beforeEach(async () => {
-    // 1. Seed User
+    // 1. Criar usuário
     const user = await UserFactory.create();
     userId = (user._id as mongoose.Types.ObjectId).toString();
     token = jwt.sign({ userId, role: 'customer' }, TEST_SECRET, { expiresIn: '1h' });
 
-    // 2. Seed Address
+    // 2. Criar endereço
     const address = await AddressFactory.create(user._id as mongoose.Types.ObjectId);
     addressId = (address._id as mongoose.Types.ObjectId).toString();
 
-    // 3. Seed Payment Method
+    // 3. Criar método de pagamento
     await PaymentMethodFactory.create({ identifier: 'pix', name: 'Pix' });
 
-    // 4. Seed Product
+    // 4. Criar produto
     const product = await ProductFactory.create({ price: 50.0, stockQuantity: 100 });
     productId = (product._id as mongoose.Types.ObjectId).toString();
 
-    // 5. Seed Cart with Item
+    // 5. Criar carrinho com item
     await CartFactory.create(user._id as mongoose.Types.ObjectId, {
       items: [
         {
@@ -76,7 +76,7 @@ describe('Checkout Routes Integration', () => {
   });
 
   describe('POST /api/v1/checkout', () => {
-    it('should create an order successfully', async () => {
+    it('deve criar um pedido com sucesso', async () => {
       const res = await request(app)
         .post('/api/v1/checkout')
         .set('Authorization', `Bearer ${token}`)
@@ -90,22 +90,22 @@ describe('Checkout Routes Integration', () => {
       expect(res.body.data.status).toBe(OrderStatus.AWAITING_PAYMENT);
       expect(res.body.data.totals.total).toBe(100.0);
 
-      // Verify Side Effects
-      // 1. Cart should be cleared
+      // Verifica efeitos colaterais
+      // 1. Carrinho deve estar vazio
       const updatedCart = await Cart.findOne({ userId });
       expect(updatedCart).toBeTruthy();
       expect(updatedCart?.items.length).toBe(0);
       expect(updatedCart?.subtotal).toBe(0);
 
-      // 2. Order should exist in DB
+      // 2. Pedido deve existir no banco
       const order = await Order.findOne({ orderNumber: res.body.data.orderNumber });
       expect(order).toBeTruthy();
       expect(order?.userId.toString()).toBe(userId);
       expect(order?.payment.method).toBe('pix');
     });
 
-    it('should fail if cart is empty', async () => {
-      // Clear cart first
+    it('deve falhar quando o carrinho está vazio', async () => {
+      // Limpar carrinho primeiro
       await Cart.updateOne({ userId }, { items: [], subtotal: 0, total: 0 });
 
       const res = await request(app)

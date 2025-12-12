@@ -4,18 +4,18 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { UserFactory, ProductFactory } from '../../factories';
 import mongoose from 'mongoose';
 
-describe('Admin Routes Integration', () => {
+describe('Rotas de Admin - Integração', () => {
   let adminToken: string;
   let customerToken: string;
 
   beforeEach(async () => {
-    // Create Admin
+    // Criar Admin
     await UserFactory.create({
       email: 'admin@test.com',
       role: 'admin',
     });
 
-    // Create Customer
+    // Criar Cliente
     await UserFactory.create({
       email: 'customer@test.com',
       role: 'customer',
@@ -28,7 +28,7 @@ describe('Admin Routes Integration', () => {
     });
     adminToken = adminLogin.body.data.accessToken;
 
-    // Login Customer
+    // Login Cliente
     const customerLogin = await request(app).post('/api/v1/auth/login').send({
       email: 'customer@test.com',
       password: 'password123',
@@ -36,13 +36,13 @@ describe('Admin Routes Integration', () => {
     customerToken = customerLogin.body.data.accessToken;
   });
 
-  describe('RBAC / Security', () => {
-    it('should deny access if not authenticated (401)', async () => {
+  describe('Controle de Acesso e Segurança', () => {
+    it('deve negar acesso sem autenticação (401)', async () => {
       const res = await request(app).get('/api/v1/admin/products');
       expect(res.status).toBe(401);
     });
 
-    it('should deny access if user is not admin (403)', async () => {
+    it('deve negar acesso para usuário não-admin (403)', async () => {
       const res = await request(app)
         .get('/api/v1/admin/products')
         .set('Authorization', `Bearer ${customerToken}`);
@@ -51,7 +51,7 @@ describe('Admin Routes Integration', () => {
       expect(res.body.message).toContain('permissão');
     });
 
-    it('should allow access if user is admin', async () => {
+    it('deve permitir acesso para usuário admin', async () => {
       const res = await request(app)
         .get('/api/v1/admin/products')
         .set('Authorization', `Bearer ${adminToken}`);
@@ -60,8 +60,8 @@ describe('Admin Routes Integration', () => {
     });
   });
 
-  describe('Product Management (CRUD)', () => {
-    it('should list products for admin', async () => {
+  describe('Gerenciamento de Produtos (CRUD)', () => {
+    it('deve listar produtos para o admin', async () => {
       await ProductFactory.create({ name: 'Admin Product' });
 
       const res = await request(app)
@@ -73,7 +73,7 @@ describe('Admin Routes Integration', () => {
       expect(Array.isArray(res.body.data)).toBe(true);
     });
 
-    it('should create a new product', async () => {
+    it('deve criar um novo produto', async () => {
       const newProduct = {
         name: 'New Created Product',
         description: 'Desc',
@@ -91,13 +91,13 @@ describe('Admin Routes Integration', () => {
       expect(res.status).toBe(201);
       expect(res.body.data.name).toBe(newProduct.name);
 
-      // Side-effect: Product persisted in DB
+      // Efeito colateral: Produto salvo no banco
       const createdProduct = await mongoose.model('Product').findOne({ name: newProduct.name });
       expect(createdProduct).toBeDefined();
       expect(createdProduct!.price).toBe(newProduct.price);
     });
 
-    it('should delete a product', async () => {
+    it('deve deletar um produto', async () => {
       const product = await ProductFactory.create({ name: 'To Delete' });
 
       const res = await request(app)
@@ -106,11 +106,11 @@ describe('Admin Routes Integration', () => {
 
       expect(res.status).toBe(204);
 
-      // Verify deletion via API
+      // Verifica deleção via API
       const check = await request(app).get(`/api/v1/products/${product._id}`);
       expect(check.status).toBe(404);
 
-      // Verify deletion in DB
+      // Verifica deleção no banco
       const deletedProduct = await mongoose.model('Product').findById(product._id);
       expect(deletedProduct).toBeNull();
     });

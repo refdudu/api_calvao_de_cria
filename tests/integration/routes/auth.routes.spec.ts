@@ -5,15 +5,15 @@ import { UserFactory } from '../../factories';
 import mongoose from 'mongoose';
 import { cpf as cpfValidator } from 'cpf-cnpj-validator';
 
-describe('Auth Routes Integration', () => {
+describe('Rotas de Autenticação - Integração', () => {
   describe('POST /api/v1/auth/register', () => {
-    it('should register a new user successfully', async () => {
+    it('deve registrar um novo usuário com sucesso', async () => {
       const userData = {
         name: 'Test Register',
         email: 'register@test.com',
         password: 'Password123!',
         passwordConfirm: 'Password123!',
-        cpf: cpfValidator.generate(), // Generate a valid CPF
+        cpf: cpfValidator.generate(), // Gera um CPF válido
         phone: '11999999999',
         birthDate: '1990-01-01',
       };
@@ -26,14 +26,14 @@ describe('Auth Routes Integration', () => {
       expect(res.body.data.accessToken).toBeDefined();
       expect(res.body.data.refreshToken).toBeDefined();
 
-      // Side-effect verification: User persisted in DB
+      // Verifica efeito colateral: Usuário salvo no banco
       const createdUser = await mongoose.model('User').findOne({ email: userData.email });
       expect(createdUser).toBeDefined();
       expect(createdUser!.name).toBe(userData.name);
-      expect(createdUser!.passwordHash).not.toBe(userData.password); // Should be hashed
+      expect(createdUser!.passwordHash).not.toBe(userData.password); // Deve estar criptografado
     });
 
-    it('should fail with validation error for duplicate email', async () => {
+    it('deve falhar com email duplicado', async () => {
       await UserFactory.create({ email: 'duplicate@test.com' });
       const userData = {
         name: 'Duplicate',
@@ -51,7 +51,7 @@ describe('Auth Routes Integration', () => {
       expect(res.body.message).toContain('Dados inválidos');
     });
 
-    it('should fail if fields are missing', async () => {
+    it('deve falhar quando campos obrigatórios estão faltando', async () => {
       const res = await request(app)
         .post('/api/v1/auth/register')
         .send({ email: 'missing-pass@test.com' });
@@ -62,7 +62,7 @@ describe('Auth Routes Integration', () => {
   });
 
   describe('POST /api/v1/auth/login', () => {
-    it('should login successfully valid credentials', async () => {
+    it('deve fazer login com credenciais válidas', async () => {
       await UserFactory.create({
         email: 'login@test.com',
       });
@@ -77,7 +77,7 @@ describe('Auth Routes Integration', () => {
       expect(res.body.data.refreshToken).toBeDefined();
     });
 
-    it('should fail with invalid credentials', async () => {
+    it('deve falhar com credenciais inválidas', async () => {
       await UserFactory.create({ email: 'wrongpass@test.com' });
 
       const res = await request(app).post('/api/v1/auth/login').send({
@@ -90,11 +90,11 @@ describe('Auth Routes Integration', () => {
     });
   });
 
-  describe('Security: Deleted User Token Validation', () => {
-    it('should reject requests with token from deleted user (401)', async () => {
+  describe('Segurança: Token de Usuário Deletado', () => {
+    it('deve rejeitar token de usuário que foi deletado (401)', async () => {
       // 1. Criar usuário e fazer login para obter token válido
       const user = await UserFactory.create({ email: 'tobeDeleted@test.com' });
-      
+
       const loginRes = await request(app).post('/api/v1/auth/login').send({
         email: 'tobeDeleted@test.com',
         password: 'password123',

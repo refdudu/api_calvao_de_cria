@@ -23,7 +23,7 @@ describe('AuthService', () => {
   });
 
   describe('register', () => {
-    it('should register a new user successfully', async () => {
+    it('deve registrar um novo usuário com sucesso', async () => {
       // Arrange
       const userData = {
         name: 'New User',
@@ -53,7 +53,7 @@ describe('AuthService', () => {
       expect(result.data.user.email).toBe(userData.email);
     });
 
-    it('should throw error if repository fails (e.g. duplicate email)', async () => {
+    it('deve lançar erro quando repositório falha (ex: email duplicado)', async () => {
       const userData = { email: 'duplicate@test.com', password: '123', name: 'New User' };
       vi.mocked(userRepository.createUser).mockRejectedValue(new Error('Duplicate key'));
 
@@ -62,7 +62,7 @@ describe('AuthService', () => {
   });
 
   describe('login', () => {
-    it('should login successfully with correct credentials', async () => {
+    it('deve fazer login com credenciais corretas', async () => {
       // Arrange
       const passwordPlain = 'password123';
       const passwordHash = await bcrypt.hash(passwordPlain, 10);
@@ -77,20 +77,20 @@ describe('AuthService', () => {
       // Assert
       expect(result.data.accessToken).toBeDefined();
       expect(result.data.refreshToken).toBeDefined();
-      expect(userRepository.updateById).toHaveBeenCalled(); // Should update refresh token hash
+      expect(userRepository.updateById).toHaveBeenCalled(); // Deve atualizar o hash do refresh token
     });
 
-    it('should throw 401 with incorrect password', async () => {
+    it('deve retornar 401 com senha incorreta', async () => {
       const user = UserFactory.build({ passwordHash: 'hashed_real_password' });
       vi.mocked(userRepository.findByEmailWithPassword).mockResolvedValue(user);
 
       // Act & Assert
       await expect(authService.login('test@example.com', 'wrong_password')).rejects.toThrow(
         'Credenciais inválidas.'
-      ); // Check AppError message
+      ); // Verifica mensagem do AppError
     });
 
-    it('should throw 401 if user not found', async () => {
+    it('deve retornar 401 quando usuário não existe', async () => {
       vi.mocked(userRepository.findByEmailWithPassword).mockResolvedValue(null);
 
       await expect(authService.login('nonexistent@test.com', '123')).rejects.toThrow(
@@ -100,7 +100,7 @@ describe('AuthService', () => {
   });
 
   describe('refreshAccessToken', () => {
-    it('should refresh token successfully', async () => {
+    it('deve renovar token com sucesso', async () => {
       // Arrange
       const userId = 'userId123';
       const role = 'customer';
@@ -127,12 +127,12 @@ describe('AuthService', () => {
       expect(result.data.refreshToken).toBe(validRefreshToken);
     });
 
-    it('should fail if refresh token hash does not match (Reuse Detection)', async () => {
+    it('deve falhar quando hash do refresh token não confere (Detecção de Reuso)', async () => {
       const validRefreshToken = jwt.sign(
         { userId: 'u1', role: 'customer' },
         process.env.REFRESH_TOKEN_SECRET as string
       );
-      const user = UserFactory.build({ currentRefreshTokenHash: 'old_hash' }); // Mismatch
+      const user = UserFactory.build({ currentRefreshTokenHash: 'old_hash' }); // Hash diferente
 
       vi.mocked(userRepository.findByIdWithRefreshToken).mockResolvedValue(user);
 

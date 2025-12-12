@@ -48,7 +48,7 @@ describe('CartService', () => {
   });
 
   describe('addItemToCart', () => {
-    it('should calculate totals correctly when adding item', async () => {
+    it('deve calcular totais corretamente ao adicionar item', async () => {
       const mockProduct = ProductFactory.build({
         _id: 'prod1' as any,
         name: 'Product 1',
@@ -74,7 +74,7 @@ describe('CartService', () => {
         { productId: 'prod1', quantity: 2 }
       );
 
-      // Verify item was added with all correct properties
+      // Verifica se o item foi adicionado com todas as propriedades corretas
       expect(mockCart.items).toHaveLength(1);
       expect(mockCart.items[0]).toMatchObject({
         productId: 'prod1',
@@ -83,19 +83,19 @@ describe('CartService', () => {
         quantity: 2,
         price: 100,
         promotionalPrice: 90,
-        unitPrice: 90, // Promotional price
+        unitPrice: 90, // Preço promocional
         totalItemPrice: 180,
       });
 
-      // Verify cart was saved
+      // Verifica se o carrinho foi salvo
       expect(mockCart.save).toHaveBeenCalled();
 
-      // Verify return structure
+      // Verifica estrutura de retorno
       expect(result).toHaveProperty('data');
-      expect(result.details).toBeFalsy(); // No coupon removed (can be null or undefined)
+      expect(result.details).toBeFalsy(); // Sem cupom removido (pode ser null ou undefined)
     });
 
-    it('should throw 409 if stock is insufficient', async () => {
+    it('deve lançar 409 quando estoque é insuficiente', async () => {
       const mockProduct = ProductFactory.build({
         _id: 'prod1' as any,
         stockQuantity: 1,
@@ -115,7 +115,7 @@ describe('CartService', () => {
   });
 
   describe('mergeCarts', () => {
-    it('should merge guest cart items into user cart', async () => {
+    it('deve mesclar itens do carrinho de visitante no carrinho do usuário', async () => {
       const guestCart = {
         items: [{ productId: 'prod1', quantity: 1, unitPrice: 100, totalItemPrice: 100 }],
       };
@@ -128,18 +128,18 @@ describe('CartService', () => {
         save: vi.fn().mockReturnThis(),
       };
 
-      // Mock getOrCreateCart behavior by mocking findByIdentifier for userId
+      // Mocka comportamento do getOrCreateCart através do findByIdentifier para userId
       mockCartRepo.findByIdentifier.mockResolvedValue(userCart);
 
       const result = await cartService.mergeCarts('user1', 'guest1');
 
-      // Verify merge behavior
-      expect(userCart.items).toHaveLength(1); // Should merge into existing item
+      // Verifica comportamento da mesclagem
+      expect(userCart.items).toHaveLength(1); // Deve mesclar no item existente
       expect(userCart.items[0].quantity).toBe(2);
       expect(userCart.items[0].totalItemPrice).toBe(200);
       expect(mockCartRepo.deleteByGuestCartId).toHaveBeenCalledWith('guest1');
 
-      // Verify return structure
+      // Verifica estrutura de retorno
       expect(result).toHaveProperty('data');
       expect(userCart.save).toHaveBeenCalled();
     });
